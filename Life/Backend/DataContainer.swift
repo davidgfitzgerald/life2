@@ -26,6 +26,11 @@ actor DataContainer {
     }
 }
 
+@MainActor
 func createDefaults(container: ModelContainer) {
-    // TODO
+    let task1 = Task(name: "Read")
+    
+    container.mainContext.insert(task1)
+    
+    try? container.mainContext.save()
 }

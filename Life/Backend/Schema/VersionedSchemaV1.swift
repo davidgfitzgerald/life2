@@ -13,17 +13,22 @@ enum VersionedSchemaV1: VersionedSchema {
     
     static var models: [any PersistentModel.Type] {
         [
-            // Car.self
+             Task.self
         ]
     }
 }
 
 extension VersionedSchemaV1 {
     @Model
-    final class Car: Identifiable {
-        // Attributes
-        init() {
-                
+    final class Task: Identifiable {
+        var date: Date
+
+        @Attribute(.unique)
+        var name: String
+
+        init(date: Date = Date(), name: String) {
+            self.date = date
+            self.name = name
         }
     }
 }

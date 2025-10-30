@@ -10,15 +10,23 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @State private var date = Date()
 
     var body: some View {
-        Text("Hello, World!")
+        DatePicker(
+            "Date",
+            selection: $date,
+            displayedComponents: [.date]
+        )
+        .labelsHidden()
+        TaskListView()
+        Spacer()
     }
 
 }
 
 #Preview {
-    var shouldCreateDefaults: Bool = false
+    var shouldCreateDefaults: Bool = true
     var configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
     ContentView()
         .modelContainer(DataContainer.create(shouldCreateDefaults: &shouldCreateDefaults, configuration: configuration))

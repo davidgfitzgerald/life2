@@ -10,13 +10,9 @@ import SwiftData
 
 /**
  * Set active models here.
- *
- * e.g:
- * typealias Car = VersionedSchemaV1.Car
- * typealias Motorbike = VersionedSchemaV1.Motorbike
  */
+typealias Task = VersionedSchemaV1.Task
 
 let schema = Schema([
-    // Car.self,
-    // Motorbike.self
+    Task.self,
 ])

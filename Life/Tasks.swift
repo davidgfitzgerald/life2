@@ -41,24 +41,52 @@ struct TaskListView: View {
 
 struct TaskView: View {
     @Bindable var task: Task
+    @State private var showDatePicker: Bool = false
 
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
                 TextField("Task name", text: $task.name)
                     .font(.headline)
-                Text(DateFormatters.DDMMYYYY.string(from: task.date))
-                    .font(.subheadline)
+                
+                DatePicker(
+                    "Date",
+                    selection: $task.date,
+                    displayedComponents: [.date]
+                )
+                .labelsHidden()
+                .opacity(0.02)
+                .overlay {
+                    HStack {
+                        Image(systemName: "calendar")
+                            .font(.caption)
+                            .foregroundStyle(.blue)
+                        Text(DateFormatters.DDMMYYYY.string(from: task.date))
+                            .font(.subheadline)
+                            .foregroundStyle(.blue)
+                        Spacer()
+                    }
+                    .allowsHitTesting(false)
+                }
             }
             Spacer()
-            Button(action: {
-                withAnimation(.linear(duration: 0.2)) {
-                    task.toggleStatus()
-                }
-            }) {
-                Image(systemName: task.status == TaskStatus.done ? "checkmark.square.fill" : "square")
-            }
+            TaskCompletionButtonView(task: task)
         }
+    }
+}
+
+struct TaskCompletionButtonView: View {
+    @Bindable var task: Task
+    
+    var body: some View {
+        Button(action: {
+            withAnimation(.linear(duration: 0.2)) {
+                task.toggleStatus()
+            }
+        }) {
+            Image(systemName: task.status == TaskStatus.done ? "checkmark.square.fill" : "square")
+        }
+        .buttonStyle(.borderless)  // Stops tap hitbox spreading to parent
     }
 }
 

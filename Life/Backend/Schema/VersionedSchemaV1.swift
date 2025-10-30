@@ -21,14 +21,31 @@ enum VersionedSchemaV1: VersionedSchema {
 extension VersionedSchemaV1 {
     @Model
     final class Task: Identifiable {
-        var date: Date
-
         @Attribute(.unique)
         var name: String
+        var status: TaskStatus
+        var date: Date
 
-        init(date: Date = Date(), name: String) {
+        init(
+            name: String,
+            status: TaskStatus = TaskStatus.pending,
+            date: Date = Date()
+        ) {
             self.date = date
             self.name = name
+            self.status = status
         }
+    }
+    
+    enum TaskStatus: String, Codable {
+        case pending
+        case done
+    }
+}
+
+extension VersionedSchemaV1.Task {
+
+    func toggleStatus() {
+        self.status = status == .done ? .pending : .done
     }
 }

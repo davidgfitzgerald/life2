@@ -12,6 +12,7 @@ import SwiftData
  * Set active models here.
  */
 typealias Task = VersionedSchemaV1.Task
+typealias TaskStatus = VersionedSchemaV1.TaskStatus
 
 let schema = Schema([
     Task.self,

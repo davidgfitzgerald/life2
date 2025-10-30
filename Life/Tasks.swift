@@ -11,10 +11,30 @@ import SwiftData
 
 struct TaskListView: View {
     @Query var tasks: [Task]
+    @Namespace private var namespace
+
+    var pendingTasks: [Task] {
+        tasks.filter { $0.status == .pending}
+    }
+    var completeTasks: [Task] {
+        tasks.filter { $0.status == .done}
+    }
     
     var body: some View {
-        List(tasks) { task in
-            TaskView(task: task)
+        List {
+            Section(header: Text("Tasks")) {
+                ForEach(pendingTasks) { task in
+                    TaskView(task: task)
+                        .matchedGeometryEffect(id: task.id, in: namespace)
+
+                }
+            }
+            Section(header: Text("Completed")) {
+                ForEach(completeTasks) { task in
+                    TaskView(task: task)
+                        .matchedGeometryEffect(id: task.id, in: namespace)
+                }
+            }
         }
     }
 }
@@ -22,18 +42,22 @@ struct TaskListView: View {
 struct TaskView: View {
     @Bindable var task: Task
 
-    private let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd-MM-yyyy"
-        return formatter
-    }()
-
     var body: some View {
-        VStack(alignment: .leading) {
-            TextField("Task name", text: $task.name)
-            .font(.headline)
-            Text(dateFormatter.string(from: task.date))
-            .font(.subheadline)
+        HStack {
+            VStack(alignment: .leading) {
+                TextField("Task name", text: $task.name)
+                    .font(.headline)
+                Text(DateFormatters.DDMMYYYY.string(from: task.date))
+                    .font(.subheadline)
+            }
+            Spacer()
+            Button(action: {
+                withAnimation(.linear(duration: 0.2)) {
+                    task.toggleStatus()
+                }
+            }) {
+                Image(systemName: task.status == TaskStatus.done ? "checkmark.square.fill" : "square")
+            }
         }
     }
 }

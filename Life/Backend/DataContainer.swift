@@ -28,9 +28,19 @@ actor DataContainer {
 
 @MainActor
 func createDefaults(container: ModelContainer) {
-    let task1 = Task(name: "Read")
+    let now = Date()
+    guard let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: now) else {
+        fatalError("Failed to calculate yesterday") // This should never happen
+    }
+    guard let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: now) else {
+        fatalError("Failed to calculate yesterday") // This should never happen
+    }
     
-    container.mainContext.insert(task1)
+    let task1 = Task(name: "Summat", date: yesterday)
+    let task2 = Task(name: "Blah", date: now)
+    let task3 = Task(name: "Read", date: tomorrow)
+    
+    container.mainContext.insertAll([task1, task2, task3])
     
     try? container.mainContext.save()
 }

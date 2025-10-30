@@ -10,9 +10,10 @@ import SwiftData
 
 
 struct TaskListView: View {
+    @Environment(\.modelContext) private var modelContext
     @Query var tasks: [Task]
     @Namespace private var namespace
-
+    
     var pendingTasks: [Task] {
         tasks.filter { $0.status == .pending}
     }
@@ -21,18 +22,30 @@ struct TaskListView: View {
     }
     
     var body: some View {
-        List {
-            Section(header: Text("Tasks")) {
-                ForEach(pendingTasks) { task in
-                    TaskView(task: task)
-                        .matchedGeometryEffect(id: task.id, in: namespace)
-
+        NavigationStack {
+            List {
+                Section(header: Text("Tasks")) {
+                    ForEach(pendingTasks) { task in
+                        TaskView(task: task)
+                            .matchedGeometryEffect(id: task.id, in: namespace)
+                        
+                    }
                 }
-            }
-            Section(header: Text("Completed")) {
-                ForEach(completeTasks) { task in
-                    TaskView(task: task)
-                        .matchedGeometryEffect(id: task.id, in: namespace)
+                Section(header: Text("Completed")) {
+                    ForEach(completeTasks) { task in
+                        TaskView(task: task)
+                            .matchedGeometryEffect(id: task.id, in: namespace)
+                    }
+                }
+                .navigationTitle("Tasks")
+                .toolbar {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button(action: {
+                            // Todo
+                        }) {
+                            Image(systemName: "plus")
+                        }
+                    }
                 }
             }
         }
@@ -55,7 +68,7 @@ struct TaskView: View {
                     displayedComponents: [.date]
                 )
                 .labelsHidden()
-                .opacity(0.02)
+                .opacity(0.02)  // Horrendous hack to maintain DatePicker functionality but look as close to invisible as possible
                 .overlay {
                     HStack {
                         Image(systemName: "calendar")

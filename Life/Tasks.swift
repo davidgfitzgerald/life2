@@ -30,6 +30,11 @@ struct TaskListView: View {
                         TaskView(task: task)
                             .matchedGeometryEffect(id: task.id, in: namespace)
                     }
+                    .onDelete { offsets in
+                        for index in offsets {
+                            modelContext.delete(pendingTasks[index])
+                        }
+                    }
                     if let draft = draftTask {
                         TaskView(task: draft, isDraft: true, onCommit: { name in
                             guard !name.isEmpty, !tasks.contains(where: { $0.name == name }) else {

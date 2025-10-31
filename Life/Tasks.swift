@@ -13,6 +13,7 @@ struct TaskListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query var tasks: [Task]
     @Namespace private var namespace
+    @State private var draftTask: Task?
     
     var pendingTasks: [Task] {
         tasks.filter { $0.status == .pending}
@@ -28,7 +29,16 @@ struct TaskListView: View {
                     ForEach(pendingTasks) { task in
                         TaskView(task: task)
                             .matchedGeometryEffect(id: task.id, in: namespace)
-                        
+                    }
+                    if let draft = draftTask {
+                        TaskView(task: draft, isDraft: true, onCommit: { name in
+                            guard !name.isEmpty, !tasks.contains(where: { $0.name == name }) else {
+                                draftTask = nil
+                                return
+                            }
+                            modelContext.insert(draft)
+                            draftTask = nil
+                        }, onCancel: { draftTask = nil })
                     }
                 }
                 Section(header: Text("Completed")) {
@@ -37,14 +47,12 @@ struct TaskListView: View {
                             .matchedGeometryEffect(id: task.id, in: namespace)
                     }
                 }
-                .navigationTitle("Tasks")
-                .toolbar {
-                    ToolbarItem(placement: .primaryAction) {
-                        Button(action: {
-                            // Todo
-                        }) {
-                            Image(systemName: "plus")
-                        }
+            }
+            .navigationTitle("Tasks")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button(action: { draftTask = Task(name: "") }) {
+                        Image(systemName: "plus")
                     }
                 }
             }
@@ -55,35 +63,43 @@ struct TaskListView: View {
 struct TaskView: View {
     @Bindable var task: Task
     @State private var showDatePicker: Bool = false
+    var isDraft: Bool = false
+    var onCommit: ((String) -> Void)?
+    var onCancel: (() -> Void)?
+    @FocusState private var isFocused: Bool
 
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
                 TextField("Task name", text: $task.name)
                     .font(.headline)
+                    .focused($isFocused)
+                    .onAppear { if isDraft { isFocused = true } }
+                    .onSubmit { onCommit?(task.name) }
                 
-                DatePicker(
-                    "Date",
-                    selection: $task.date,
-                    displayedComponents: [.date]
-                )
-                .labelsHidden()
-                .opacity(0.02)  // Horrendous hack to maintain DatePicker functionality but look as close to invisible as possible
-                .overlay {
-                    HStack {
-                        Image(systemName: "calendar")
-                            .font(.caption)
-                            .foregroundStyle(.blue)
-                        Text(DateFormatters.DDMMYYYY.string(from: task.date))
-                            .font(.subheadline)
-                            .foregroundStyle(.blue)
-                        Spacer()
+                DatePicker("Date", selection: $task.date, displayedComponents: [.date])
+                    .labelsHidden()
+                    .opacity(0.02)
+                    .overlay {
+                        HStack {
+                            Image(systemName: "calendar")
+                                .font(.caption)
+                                .foregroundStyle(.blue)
+                            Text(DateFormatters.DDMMYYYY.string(from: task.date))
+                                .font(.subheadline)
+                                .foregroundStyle(.blue)
+                            Spacer()
+                        }
+                        .allowsHitTesting(false)
                     }
-                    .allowsHitTesting(false)
-                }
             }
             Spacer()
-            TaskCompletionButtonView(task: task)
+            if isDraft {
+                Button("Cancel") { onCancel?() }
+                    .buttonStyle(.borderless)
+            } else {
+                TaskCompletionButtonView(task: task)
+            }
         }
     }
 }

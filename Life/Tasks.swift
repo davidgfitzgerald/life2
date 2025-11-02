@@ -13,7 +13,9 @@ struct TaskListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query var tasks: [Task]
     @Namespace private var namespace
+    
     @State private var draftTask: Task?
+    @Binding var date: Date
     
     var pendingTasks: [Task] {
         tasks.filter { $0.status == .pending}
@@ -56,7 +58,7 @@ struct TaskListView: View {
             .navigationTitle("Tasks")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button(action: { draftTask = Task(name: "") }) {
+                    Button(action: { draftTask = Task(name: "", date: date) }) {
                         Image(systemName: "plus")
                     }
                 }
@@ -125,5 +127,6 @@ struct TaskCompletionButtonView: View {
 }
 
 #Preview {
-    TaskListView()
+    @Previewable @State var date = Date()
+    TaskListView(date: $date)
 }

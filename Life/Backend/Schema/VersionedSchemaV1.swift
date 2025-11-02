@@ -29,7 +29,7 @@ extension VersionedSchemaV1 {
         init(
             name: String,
             status: TaskStatus = TaskStatus.pending,
-            date: Date = Date()
+            date: Date = Date(),
         ) {
             self.date = date
             self.name = name

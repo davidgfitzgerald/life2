@@ -46,36 +46,40 @@ struct TaskListView: View {
 
         NavigationStack {
             List {
-                Section(header: Text("Pending")) {
-                    ForEach(pendingTasks) { task in
-                        TaskView(task: task)
-                            .matchedGeometryEffect(id: task.id, in: namespace)
-                    }
-                    .onDelete { offsets in
-                        for index in offsets {
-                            modelContext.delete(pendingTasks[index])
+                if !pendingTasks.isEmpty || draftTask != nil {
+                    Section(header: Text("Pending")) {
+                        ForEach(pendingTasks) { task in
+                            TaskView(task: task)
+                                .matchedGeometryEffect(id: "\(task.id)-pending", in: namespace)
+                        }
+                        .onDelete { offsets in
+                            for index in offsets {
+                                modelContext.delete(pendingTasks[index])
+                            }
+                        }
+                        if let draft = draftTask {
+                            TaskView(task: draft, isDraft: true, onCommit: { name in
+                                let result = Task.create(
+                                    name: draft.name,
+                                    status: .pending,
+                                    date: draft.date,
+                                    in: modelContext,
+                                )
+                                if case let .failure(error) = result {
+                                    errorMessage = error.localizedDescription
+                                    showError = true
+                                }
+                                draftTask = nil
+                            }, onCancel: { draftTask = nil })
                         }
                     }
-                    if let draft = draftTask {
-                        TaskView(task: draft, isDraft: true, onCommit: { name in
-                            let result = Task.create(
-                                name: draft.name,
-                                status: .pending,
-                                date: draft.date,
-                                in: modelContext,
-                            )
-                            if case let .failure(error) = result {
-                                errorMessage = error.localizedDescription
-                                showError = true
-                            }
-                            draftTask = nil
-                        }, onCancel: { draftTask = nil })
-                    }
                 }
-                Section(header: Text("Completed")) {
-                    ForEach(completedTasks) { task in
-                        TaskView(task: task)
-                            .matchedGeometryEffect(id: task.id, in: namespace)
+                if completedTasks.isEmpty == false {
+                    Section(header: Text("Completed")) {
+                        ForEach(completedTasks) { task in
+                            TaskView(task: task)
+                                .matchedGeometryEffect(id: "\(task.id)-completed", in: namespace)
+                        }
                     }
                 }
             }

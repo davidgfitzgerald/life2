@@ -65,50 +65,50 @@ private struct TaskListContent: View {
     
     var body: some View {
         List {
-                Section(header: Text("Tasks")) {
-                    ForEach(pendingTasks) { task in
-                        TaskView(task: task)
-                            .matchedGeometryEffect(id: task.id, in: namespace)
+            Section(header: Text("Tasks")) {
+                ForEach(pendingTasks) { task in
+                    TaskView(task: task)
+                        .matchedGeometryEffect(id: task.id, in: namespace)
+                }
+                .onDelete { offsets in
+                    for index in offsets {
+                        modelContext.delete(pendingTasks[index])
                     }
-                    .onDelete { offsets in
-                        for index in offsets {
-                            modelContext.delete(pendingTasks[index])
+                }
+                if let draft = draftTask {
+                    TaskView(task: draft, isDraft: true, onCommit: { name in
+                        let result = Task.create(
+                            name: draft.name,
+                            status: .pending,
+                            date: draft.date,
+                            in: modelContext,
+                        )
+                        if case let .failure(error) = result {
+                            errorMessage = error.localizedDescription
+                            showError = true
                         }
-                    }
-                    if let draft = draftTask {
-                        TaskView(task: draft, isDraft: true, onCommit: { name in
-                            let result = Task.create(
-                                name: draft.name,
-                                status: .pending,
-                                date: draft.date,
-                                in: modelContext,
-                            )
-                            if case let .failure(error) = result {
-                                errorMessage = error.localizedDescription
-                                showError = true
-                            }
-                            draftTask = nil
-                        }, onCancel: { draftTask = nil })
-                    }
-                }
-                Section(header: Text("Completed")) {
-                    ForEach(completedTasks) { task in
-                        TaskView(task: task)
-                            .matchedGeometryEffect(id: task.id, in: namespace)
-                    }
+                        draftTask = nil
+                    }, onCancel: { draftTask = nil })
                 }
             }
-            .navigationTitle("Tasks")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        draftTask = Task(name: "", date: date)
-                    } label: {
-                        Image(systemName: "plus")
-                    }
+            Section(header: Text("Completed")) {
+                ForEach(completedTasks) { task in
+                    TaskView(task: task)
+                        .matchedGeometryEffect(id: task.id, in: namespace)
                 }
             }
-            .id(date) // Force view recreation when date changes to reinitialize queries with new date
+        }
+        .navigationTitle("Tasks")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    draftTask = Task(name: "", date: date)
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
+        }
+        .id(date) // Force view recreation when date changes to reinitialize queries with new date
     }
 }
 

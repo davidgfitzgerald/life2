@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import CoreData
 
 enum VersionedSchemaV1: VersionedSchema {
     static var versionIdentifier = Schema.Version(0, 1, 0)
@@ -62,6 +63,20 @@ extension VersionedSchemaV1 {
         case pending
         case done
     }
+    
+    enum TaskError: LocalizedError {
+        case duplicateName(String)
+        case saveFailed(Error)
+        
+        var errorDescription: String? {
+            switch self {
+            case .duplicateName(let name):
+                return "A task named '\(name)' already exists."
+            case .saveFailed(let error):
+                return "Failed to save task: \(error.localizedDescription)"
+            }
+        }
+    }
 }
 
 extension VersionedSchemaV1.Task {
@@ -70,6 +85,37 @@ extension VersionedSchemaV1.Task {
      */
     func toggleStatus() {
         self.status = status == .done ? .pending : .done
+    }
+    
+    static func create(
+        name: String,
+        status: TaskStatus = .pending,
+        date: Date = Date(),
+        in context: ModelContext,
+    ) -> Result<Task, VersionedSchemaV1.TaskError> {
+
+        do {
+            let descriptor = FetchDescriptor<Task>(
+                predicate: #Predicate { $0.name == name }
+            )
+            let existingTasks = try context.fetch(descriptor)
+            if existingTasks.first != nil {
+                return .failure(.duplicateName(name))
+            }
+        } catch {
+            return .failure(.saveFailed(error))
+        }
+
+        let task = Task(name: name, status: status, date: date)
+        context.insert(task)
+        
+        do {
+            try context.save()
+            return .success(task)
+        } catch let error as NSError {
+            context.delete(task)
+            return .failure(.saveFailed(error))
+        }
     }
 }
 

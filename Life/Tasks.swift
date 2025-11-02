@@ -20,6 +20,8 @@ struct TaskListView: View {
      * View state
      */
     @State private var draftTask: Task?
+    @State private var showError: Bool = false
+    @State private var errorMessage: String?
     @Binding var date: Date
     
     /**
@@ -47,11 +49,16 @@ struct TaskListView: View {
                     }
                     if let draft = draftTask {
                         TaskView(task: draft, isDraft: true, onCommit: { name in
-                            guard !name.isEmpty, !tasks.contains(where: { $0.name == name }) else {
-                                draftTask = nil
-                                return
+                            let result = Task.create(
+                                name: draft.name,
+                                status: .pending,
+                                date: draft.date,
+                                in: modelContext,
+                            )
+                            if case let .failure(error) = result {
+                                errorMessage = error.localizedDescription
+                                showError = true
                             }
-                            modelContext.insert(draft)
                             draftTask = nil
                         }, onCancel: { draftTask = nil })
                     }
@@ -66,11 +73,18 @@ struct TaskListView: View {
             .navigationTitle("Tasks")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button(action: { draftTask = Task(name: "", date: date) }) {
+                    Button {
+                        draftTask = Task(name: "", date: date)
+                    } label: {
                         Image(systemName: "plus")
                     }
                 }
             }
+        }
+        .alert("Error", isPresented: $showError) {
+            Button("OK") { }
+        } message: {
+            Text(errorMessage ?? "An error occured")
         }
     }
 }

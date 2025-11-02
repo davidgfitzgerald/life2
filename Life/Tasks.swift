@@ -25,17 +25,49 @@ struct TaskListView: View {
     @Binding var date: Date
     
     /**
-     * DB queries.
-     */
-    @Query(filter: Task.predicate(status: .pending)) var pendingTasks: [Task]
-    @Query(filter: Task.predicate(status: .done)) var completedTasks: [Task]
-    
-    /**
      * View body.
      */
     var body: some View {
         NavigationStack {
-            List {
+            TaskListContent(
+                date: date,
+                draftTask: $draftTask,
+                showError: $showError,
+                errorMessage: $errorMessage,
+                namespace: namespace
+            )
+        }
+        .alert("Error", isPresented: $showError) {
+            Button("OK") { }
+        } message: {
+            Text(errorMessage ?? "An error occured")
+        }
+    }
+}
+
+private struct TaskListContent: View {
+    @Environment(\.modelContext) private var modelContext
+    let date: Date
+    @Binding var draftTask: Task?
+    @Binding var showError: Bool
+    @Binding var errorMessage: String?
+    let namespace: Namespace.ID
+    
+    @Query var pendingTasks: [Task]
+    @Query var completedTasks: [Task]
+    
+    init(date: Date, draftTask: Binding<Task?>, showError: Binding<Bool>, errorMessage: Binding<String?>, namespace: Namespace.ID) {
+        self.date = date
+        self._draftTask = draftTask
+        self._showError = showError
+        self._errorMessage = errorMessage
+        self.namespace = namespace
+        _pendingTasks = Query(filter: Task.predicate(status: .pending, date: date))
+        _completedTasks = Query(filter: Task.predicate(status: .done, date: date))
+    }
+    
+    var body: some View {
+        List {
                 Section(header: Text("Tasks")) {
                     ForEach(pendingTasks) { task in
                         TaskView(task: task)
@@ -79,12 +111,7 @@ struct TaskListView: View {
                     }
                 }
             }
-        }
-        .alert("Error", isPresented: $showError) {
-            Button("OK") { }
-        } message: {
-            Text(errorMessage ?? "An error occured")
-        }
+            .id(date) // Force view recreation when date changes to reinitialize queries with new date
     }
 }
 

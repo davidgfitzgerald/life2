@@ -27,7 +27,7 @@ struct ContentView: View {
         ClosingDatePicker(date: $date)
         
         TaskListView(
-            date: $date
+            date: date
         )
         Spacer()
     }

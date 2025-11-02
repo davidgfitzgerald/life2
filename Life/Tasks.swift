@@ -17,109 +17,105 @@ struct TaskListView: View {
     @Namespace private var namespace
     
     /**
-     * View state
+     * View state.
      */
-    @State private var showError: Bool = false
-    @State private var errorMessage: String?
-    @Binding var date: Date
+    let date: Date
+    @State var draftTask: Task? = nil
+    @State var showError: Bool = false
+    @State var errorMessage: String? = nil
+    
+    /**
+     * View queries.
+     */
+    @Query var pendingTasks: [Task]
+    @Query var completedTasks: [Task]
+    
+    /**
+     * View init.
+     */
+    init(date: Date) {
+        self.date = date
+        _pendingTasks = Query(filter: Task.predicate(status: .pending, date: date))
+        _completedTasks = Query(filter: Task.predicate(status: .done, date: date))
+    }
     
     /**
      * View body.
      */
     var body: some View {
-        NavigationStack {
-            TaskListContent(
-                date: date,
-                showError: $showError,
-                errorMessage: $errorMessage,
-                namespace: namespace
-            )
-        }
-        .alert("Error", isPresented: $showError) {
-            Button("OK") { }
-        } message: {
-            Text(errorMessage ?? "An error occured")
-        }
-    }
-}
 
-private struct TaskListContent: View {
-    @Environment(\.modelContext) private var modelContext
-    let date: Date
-    @State var draftTask: Task? = nil
-    @Binding var showError: Bool
-    @Binding var errorMessage: String?
-    let namespace: Namespace.ID
-    
-    @Query var pendingTasks: [Task]
-    @Query var completedTasks: [Task]
-    
-    init(date: Date, showError: Binding<Bool>, errorMessage: Binding<String?>, namespace: Namespace.ID) {
-        self.date = date
-        self._showError = showError
-        self._errorMessage = errorMessage
-        self.namespace = namespace
-        _pendingTasks = Query(filter: Task.predicate(status: .pending, date: date))
-        _completedTasks = Query(filter: Task.predicate(status: .done, date: date))
-    }
-    
-    var body: some View {
-        List {
-            Section(header: Text("Tasks")) {
-                ForEach(pendingTasks) { task in
-                    TaskView(task: task)
-                        .matchedGeometryEffect(id: task.id, in: namespace)
-                }
-                .onDelete { offsets in
-                    for index in offsets {
-                        modelContext.delete(pendingTasks[index])
+        NavigationStack {
+            List {
+                Section(header: Text("Tasks")) {
+                    ForEach(pendingTasks) { task in
+                        TaskView(task: task)
+                            .matchedGeometryEffect(id: task.id, in: namespace)
+                    }
+                    .onDelete { offsets in
+                        for index in offsets {
+                            modelContext.delete(pendingTasks[index])
+                        }
+                    }
+                    if let draft = draftTask {
+                        TaskView(task: draft, isDraft: true, onCommit: { name in
+                            let result = Task.create(
+                                name: draft.name,
+                                status: .pending,
+                                date: draft.date,
+                                in: modelContext,
+                            )
+                            if case let .failure(error) = result {
+                                errorMessage = error.localizedDescription
+                                showError = true
+                            }
+                            draftTask = nil
+                        }, onCancel: { draftTask = nil })
                     }
                 }
-                if let draft = draftTask {
-                    TaskView(task: draft, isDraft: true, onCommit: { name in
-                        let result = Task.create(
-                            name: draft.name,
-                            status: .pending,
-                            date: draft.date,
-                            in: modelContext,
-                        )
-                        if case let .failure(error) = result {
-                            errorMessage = error.localizedDescription
-                            showError = true
-                        }
-                        draftTask = nil
-                    }, onCancel: { draftTask = nil })
+                Section(header: Text("Completed")) {
+                    ForEach(completedTasks) { task in
+                        TaskView(task: task)
+                            .matchedGeometryEffect(id: task.id, in: namespace)
+                    }
                 }
             }
-            Section(header: Text("Completed")) {
-                ForEach(completedTasks) { task in
-                    TaskView(task: task)
-                        .matchedGeometryEffect(id: task.id, in: namespace)
+            .navigationTitle("Tasks")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        draftTask = Task(name: "", date: date)
+                    } label: {
+                        Image(systemName: "plus")
+                    }
                 }
             }
-        }
-        .navigationTitle("Tasks")
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    draftTask = Task(name: "", date: date)
-                } label: {
-                    Image(systemName: "plus")
-                }
+            .alert("Error", isPresented: $showError) {
+                Button("OK") { }
+            } message: {
+                Text(errorMessage ?? "An error occured")
             }
         }
-        .id(date) // Force view recreation when date changes to reinitialize queries with new date
     }
 }
 
 struct TaskView: View {
+    /**
+     * View args.
+     */
     @Bindable var task: Task
-    @State private var showDatePicker: Bool = false
     var isDraft: Bool = false
     var onCommit: ((String) -> Void)?
     var onCancel: (() -> Void)?
+
+    /**
+     * View state.
+     */
+    @State private var showDatePicker: Bool = false
     @FocusState private var isFocused: Bool
 
+    /**
+     * View body.
+     */
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
@@ -158,8 +154,14 @@ struct TaskView: View {
 }
 
 struct TaskCompletionButtonView: View {
+    /**
+     * View args.
+     */
     @Bindable var task: Task
     
+    /**
+     * View body.
+     */
     var body: some View {
         Button(action: {
             withAnimation(.linear(duration: 0.2)) {
@@ -172,7 +174,6 @@ struct TaskCompletionButtonView: View {
     }
 }
 
-#Preview {
-    @Previewable @State var date = Date()
-    TaskListView(date: $date)
+#Preview("TaskListView") {
+    TaskListView(date: Date())
 }

@@ -21,11 +21,29 @@ enum VersionedSchemaV1: VersionedSchema {
 extension VersionedSchemaV1 {
     @Model
     final class Task: Identifiable {
+        /**
+         * Raw DB fields.
+         */
         @Attribute(.unique)
         var name: String
-        var status: TaskStatus
+        var statusRawValue: String
         var date: Date
-
+        
+        /**
+         * Computed properties
+         */
+        var status: TaskStatus {
+            get {
+                TaskStatus(rawValue: statusRawValue) ?? .pending
+            }
+            set {
+                statusRawValue = newValue.rawValue
+            }
+        }
+        
+        /**
+         * Task init.
+         */
         init(
             name: String,
             status: TaskStatus = TaskStatus.pending,
@@ -33,19 +51,36 @@ extension VersionedSchemaV1 {
         ) {
             self.date = date
             self.name = name
-            self.status = status
+            self.statusRawValue = status.rawValue
         }
     }
     
-    enum TaskStatus: String, Codable {
+    /**
+     * Task enums.
+     */
+    enum TaskStatus: String, Codable, CaseIterable {
         case pending
         case done
     }
 }
 
 extension VersionedSchemaV1.Task {
-
+    /**
+     * Task methods.
+     */
     func toggleStatus() {
         self.status = status == .done ? .pending : .done
+    }
+}
+
+extension VersionedSchemaV1.Task {
+    /**
+     * Task querying.
+     */
+    static func predicate(status: TaskStatus) -> Predicate<Task> {
+        let statusValue = status.rawValue
+        return #Predicate<Task> { task in
+            task.statusRawValue == statusValue
+        }
     }
 }

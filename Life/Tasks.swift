@@ -10,20 +10,28 @@ import SwiftData
 
 
 struct TaskListView: View {
+    /**
+     * View environment.
+     */
     @Environment(\.modelContext) private var modelContext
-    @Query var tasks: [Task]
     @Namespace private var namespace
     
+    /**
+     * View state
+     */
     @State private var draftTask: Task?
     @Binding var date: Date
     
-    var pendingTasks: [Task] {
-        tasks.filter { $0.status == .pending}
-    }
-    var completeTasks: [Task] {
-        tasks.filter { $0.status == .done}
-    }
+    /**
+     * DB queries.
+     */
+    @Query(sort: \Task.date) var tasks: [Task]
+    @Query(filter: Task.predicate(status: .pending)) var pendingTasks: [Task]
+    @Query(filter: Task.predicate(status: .done)) var completeTasks: [Task]
     
+    /**
+     * View body.
+     */
     var body: some View {
         NavigationStack {
             List {

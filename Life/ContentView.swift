@@ -18,23 +18,19 @@ struct ContentView: View {
      * View state.
      */
     @State private var date = Date()
+    @State private var datePickerID = UUID()
     
     /**
      * View body.
      */
     var body: some View {
-        DatePicker(
-            "Date",
-            selection: $date,
-            displayedComponents: [.date]
-        )
-        .labelsHidden()
+        ClosingDatePicker(date: $date)
+        
         TaskListView(
             date: $date
         )
         Spacer()
     }
-
 }
 
 #Preview {

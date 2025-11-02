@@ -19,7 +19,6 @@ struct TaskListView: View {
     /**
      * View state
      */
-    @State private var draftTask: Task?
     @State private var showError: Bool = false
     @State private var errorMessage: String?
     @Binding var date: Date
@@ -31,7 +30,6 @@ struct TaskListView: View {
         NavigationStack {
             TaskListContent(
                 date: date,
-                draftTask: $draftTask,
                 showError: $showError,
                 errorMessage: $errorMessage,
                 namespace: namespace
@@ -48,7 +46,7 @@ struct TaskListView: View {
 private struct TaskListContent: View {
     @Environment(\.modelContext) private var modelContext
     let date: Date
-    @Binding var draftTask: Task?
+    @State var draftTask: Task? = nil
     @Binding var showError: Bool
     @Binding var errorMessage: String?
     let namespace: Namespace.ID
@@ -56,9 +54,8 @@ private struct TaskListContent: View {
     @Query var pendingTasks: [Task]
     @Query var completedTasks: [Task]
     
-    init(date: Date, draftTask: Binding<Task?>, showError: Binding<Bool>, errorMessage: Binding<String?>, namespace: Namespace.ID) {
+    init(date: Date, showError: Binding<Bool>, errorMessage: Binding<String?>, namespace: Namespace.ID) {
         self.date = date
-        self._draftTask = draftTask
         self._showError = showError
         self._errorMessage = errorMessage
         self.namespace = namespace
@@ -132,9 +129,9 @@ struct TaskView: View {
                     .onAppear { if isDraft { isFocused = true } }
                     .onSubmit { onCommit?(task.name) }
                 
-                DatePicker("Date", selection: $task.date, displayedComponents: [.date])
+                ClosingDatePicker(date: $task.date)
                     .labelsHidden()
-                    .opacity(0.02)
+                    .opacity(0)
                     .overlay {
                         HStack {
                             Image(systemName: "calendar")
@@ -143,6 +140,7 @@ struct TaskView: View {
                             Text(DateFormatters.DDMMYYYY.string(from: task.date))
                                 .font(.subheadline)
                                 .foregroundStyle(.blue)
+                                .fixedSize(horizontal: true, vertical: false)
                             Spacer()
                         }
                         .allowsHitTesting(false)

@@ -27,7 +27,6 @@ struct TaskListView: View {
     /**
      * DB queries.
      */
-    @Query(sort: \Task.date) var tasks: [Task]
     @Query(filter: Task.predicate(status: .pending)) var pendingTasks: [Task]
     @Query(filter: Task.predicate(status: .done)) var completeTasks: [Task]
     

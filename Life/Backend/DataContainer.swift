@@ -33,7 +33,7 @@ func seed(container: ModelContainer) {
         fatalError("Failed to calculate yesterday") // This should never happen
     }
     guard let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: now) else {
-        fatalError("Failed to calculate yesterday") // This should never happen
+        fatalError("Failed to calculate tomorrow") // This should never happen
     }
     
     let task1 = Task(name: "Summat", date: yesterday)

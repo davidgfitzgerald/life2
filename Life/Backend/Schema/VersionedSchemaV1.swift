@@ -62,6 +62,10 @@ extension VersionedSchemaV1 {
     enum TaskStatus: String, Codable, CaseIterable {
         case pending
         case done
+        
+        var toggle: TaskStatus {
+            self == .done ? .pending : .done
+        }
     }
     
     enum TaskError: LocalizedError {
@@ -84,7 +88,7 @@ extension VersionedSchemaV1.Task {
      * Task methods.
      */
     func toggleStatus() {
-        self.status = status == .done ? .pending : .done
+        self.status = status.toggle
     }
     
     static func create(

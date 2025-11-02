@@ -11,13 +11,13 @@ import SwiftData
 actor DataContainer {
     
     @MainActor
-    static func create(shouldCreateDefaults: inout Bool, configuration: ModelConfiguration) -> ModelContainer {
+    static func create(shouldSeed: inout Bool, configuration: ModelConfiguration) -> ModelContainer {
         do {
             let container = try ModelContainer(for: schema, configurations: [configuration])
         
-            if shouldCreateDefaults {
-                shouldCreateDefaults = false
-                createDefaults(container: container)
+            if shouldSeed {
+                shouldSeed = false
+                seed(container: container)
             }
             return container
         } catch {
@@ -27,7 +27,7 @@ actor DataContainer {
 }
 
 @MainActor
-func createDefaults(container: ModelContainer) {
+func seed(container: ModelContainer) {
     let now = Date()
     guard let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: now) else {
         fatalError("Failed to calculate yesterday") // This should never happen

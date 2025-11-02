@@ -19,15 +19,15 @@ struct ContentView: View {
             displayedComponents: [.date]
         )
         .labelsHidden()
-        TaskListView()
+        TaskListView(date: $date)
         Spacer()
     }
 
 }
 
 #Preview {
-    var shouldCreateDefaults: Bool = true
+    var shouldSeed: Bool = true
     var configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
     ContentView()
-        .modelContainer(DataContainer.create(shouldCreateDefaults: &shouldCreateDefaults, configuration: configuration))
+        .modelContainer(DataContainer.create(shouldSeed: &shouldSeed, configuration: configuration))
 }

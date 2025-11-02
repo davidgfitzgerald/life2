@@ -20,7 +20,7 @@ struct LifeApp: App {
         }
         .modelContainer(
             DataContainer.create(
-                shouldCreateDefaults: &isFirstTimeLaunch,
+                shouldSeed: &isFirstTimeLaunch,
                 configuration: ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
             )
         )

@@ -46,7 +46,7 @@ struct TaskListView: View {
 
         NavigationStack {
             List {
-                Section(header: Text("Tasks")) {
+                Section(header: Text("Pending")) {
                     ForEach(pendingTasks) { task in
                         TaskView(task: task)
                             .matchedGeometryEffect(id: task.id, in: namespace)

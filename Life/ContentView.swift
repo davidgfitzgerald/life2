@@ -9,9 +9,19 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    /**
+     * View environment.
+     */
     @Environment(\.modelContext) private var modelContext
+    
+    /**
+     * View state.
+     */
     @State private var date = Date()
-
+    
+    /**
+     * View body.
+     */
     var body: some View {
         DatePicker(
             "Date",
@@ -19,7 +29,9 @@ struct ContentView: View {
             displayedComponents: [.date]
         )
         .labelsHidden()
-        TaskListView(date: $date)
+        TaskListView(
+            date: $date
+        )
         Spacer()
     }
 

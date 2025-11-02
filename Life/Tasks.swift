@@ -28,7 +28,7 @@ struct TaskListView: View {
      * DB queries.
      */
     @Query(filter: Task.predicate(status: .pending)) var pendingTasks: [Task]
-    @Query(filter: Task.predicate(status: .done)) var completeTasks: [Task]
+    @Query(filter: Task.predicate(status: .done)) var completedTasks: [Task]
     
     /**
      * View body.
@@ -63,7 +63,7 @@ struct TaskListView: View {
                     }
                 }
                 Section(header: Text("Completed")) {
-                    ForEach(completeTasks) { task in
+                    ForEach(completedTasks) { task in
                         TaskView(task: task)
                             .matchedGeometryEffect(id: task.id, in: namespace)
                     }

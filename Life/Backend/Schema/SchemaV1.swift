@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 import CoreData
 
-enum VersionedSchemaV1: VersionedSchema {
+enum SchemaV1: VersionedSchema {
     static var versionIdentifier = Schema.Version(0, 1, 0)
     
     static var models: [any PersistentModel.Type] {
@@ -19,7 +19,7 @@ enum VersionedSchemaV1: VersionedSchema {
     }
 }
 
-extension VersionedSchemaV1 {
+extension SchemaV1 {
     @Model
     final class Task: Identifiable {
         /**
@@ -83,7 +83,7 @@ extension VersionedSchemaV1 {
     }
 }
 
-extension VersionedSchemaV1.Task {
+extension SchemaV1.Task {
     /**
      * Task methods.
      */
@@ -96,7 +96,7 @@ extension VersionedSchemaV1.Task {
         status: TaskStatus = .pending,
         date: Date = Date(),
         in context: ModelContext,
-    ) -> Result<Task, VersionedSchemaV1.TaskError> {
+    ) -> Result<Task, SchemaV1.TaskError> {
 
         do {
             let descriptor = FetchDescriptor<Task>(
@@ -123,12 +123,26 @@ extension VersionedSchemaV1.Task {
     }
 }
 
-extension VersionedSchemaV1.Task {
+extension SchemaV1.Task {
     /**
      * Task querying.
      */
-    static func predicate(status: TaskStatus) -> Predicate<Task> {
+    static func predicate(
+        status: TaskStatus,
+        date: Date? = nil
+    ) -> Predicate<Task> {
         let statusValue = status.rawValue
+
+        if let date {
+            let startOfDay = Calendar.current.startOfDay(for: date)
+            let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay)!
+            return #Predicate<Task> { task in
+                task.statusRawValue == statusValue &&
+                task.date > startOfDay &&
+                task.date < endOfDay
+            }
+        }
+
         return #Predicate<Task> { task in
             task.statusRawValue == statusValue
         }

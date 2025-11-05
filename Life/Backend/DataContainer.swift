@@ -13,7 +13,11 @@ actor DataContainer {
     @MainActor
     static func create(shouldSeed: inout Bool, configuration: ModelConfiguration) -> ModelContainer {
         do {
-            let container = try ModelContainer(for: schema, configurations: [configuration])
+            let container = try ModelContainer(
+                for: schema,
+                migrationPlan: MigrationPlan.self,
+                configurations: [configuration],
+            )
         
             if shouldSeed {
                 shouldSeed = false

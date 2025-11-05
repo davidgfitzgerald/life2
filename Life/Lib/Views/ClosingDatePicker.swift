@@ -39,7 +39,7 @@ struct ClosingDatePicker<Content: View>: View {
         self.content = content()
     }
 
-
+    
     var body: some View {
         content // Display passed in (or default) content
         .contentShape(Rectangle())

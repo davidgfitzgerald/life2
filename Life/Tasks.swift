@@ -135,6 +135,7 @@ struct TaskView: View {
      * View state.
      */
     @State private var showDatePicker: Bool = false
+    @State private var showDescription: Bool = false
     @FocusState private var isFocused: Bool
 
     /**
@@ -149,16 +150,25 @@ struct TaskView: View {
                     .onAppear { if isDraft { isFocused = true } }
                     .onSubmit { onCommit?(task.name) }
                 
-                ClosingDatePicker(date: $task.date) {
-                    HStack {
-                        Image(systemName: "calendar")
-                            .font(.caption)
-                            .foregroundStyle(.blue)
-                        Text(DateFormatters.DDMMYYYY.string(from: task.date))
-                            .font(.subheadline)
-                            .foregroundStyle(.blue)
-                            .fixedSize(horizontal: true, vertical: false)
+                HStack {
+                    ClosingDatePicker(date: $task.date) {
+                        HStack {
+                            Image(systemName: "calendar")
+                                .font(.caption)
+                                .foregroundStyle(.blue)
+                            Text(DateFormatters.DDMMYYYY.string(from: task.date))
+                                .font(.subheadline)
+                                .foregroundStyle(.blue)
+                                .fixedSize(horizontal: true, vertical: false)
+                        }
                     }
+                    Button(action: {
+                        showDescription = true
+                    }, label: {
+                        Text("description")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    })
                 }
             }
             Spacer()
@@ -168,6 +178,14 @@ struct TaskView: View {
             } else {
                 TaskCompletionButtonView(task: task)
             }
+        }
+        .sheet(isPresented: $showDescription) {
+            TextEditor(text: $task.details)
+            .scrollContentBackground(.hidden)
+            .padding()
+            .padding()
+            .presentationDetents([.medium, .large])
+            .presentationBackground(.regularMaterial)
         }
     }
 }

@@ -11,9 +11,23 @@ import SwiftData
 /**
  * Set active models here.
  */
-typealias Task = SchemaV1.Task
-typealias TaskStatus = SchemaV1.TaskStatus
+typealias Task = SchemaV2.Task
+typealias TaskStatus = SchemaV2.TaskStatus
+let schema = Schema(SchemaV2.models)
 
-let schema = Schema([
-    Task.self,
-])
+
+enum MigrationPlan: SchemaMigrationPlan {
+    static var schemas: [any VersionedSchema.Type] {
+        [
+            SchemaV1.self,
+            SchemaV2.self,
+        ]
+    }
+    static var stages: [MigrationStage] {
+        [
+            migrateV1toV2,
+        ]
+    }
+}
+
+

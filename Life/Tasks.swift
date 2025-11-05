@@ -45,65 +45,77 @@ struct TaskListView: View {
     var body: some View {
 
         NavigationStack {
-            List {
-                if !pendingTasks.isEmpty || draftTask != nil {
-                    Section(header: Text("Pending")) {
-                        ForEach(pendingTasks) { task in
-                            TaskView(task: task)
-                                .matchedGeometryEffect(id: "\(task.id)-pending", in: namespace)
-                        }
-                        .onDelete { offsets in
-                            for index in offsets {
-                                modelContext.delete(pendingTasks[index])
+            ScrollViewReader { proxy in
+                List {
+                    if !pendingTasks.isEmpty || draftTask != nil {
+                        Section(header: Text("Pending")) {
+                            ForEach(pendingTasks) { task in
+                                TaskView(task: task)
+                                    .matchedGeometryEffect(id: "\(task.id)-pending", in: namespace)
+                            }
+                            .onDelete { offsets in
+                                for index in offsets {
+                                    modelContext.delete(pendingTasks[index])
+                                }
+                            }
+                            if let draft = draftTask {
+                                TaskView(task: draft, isDraft: true, onCommit: { name in
+                                    let result = Task.create(
+                                        name: draft.name,
+                                        status: .pending,
+                                        date: draft.date,
+                                        in: modelContext,
+                                    )
+                                    if case let .failure(error) = result {
+                                        errorMessage = error.localizedDescription
+                                        showError = true
+                                    }
+                                    draftTask = nil
+                                }, onCancel: { draftTask = nil })
+                                .id("draft-task")
                             }
                         }
-                        if let draft = draftTask {
-                            TaskView(task: draft, isDraft: true, onCommit: { name in
-                                let result = Task.create(
-                                    name: draft.name,
-                                    status: .pending,
-                                    date: draft.date,
-                                    in: modelContext,
-                                )
-                                if case let .failure(error) = result {
-                                    errorMessage = error.localizedDescription
-                                    showError = true
+                    }
+                    if completedTasks.isEmpty == false {
+                        Section(header: Text("Completed")) {
+                            ForEach(completedTasks) { task in
+                                TaskView(task: task)
+                                    .matchedGeometryEffect(id: "\(task.id)-completed", in: namespace)
+                            }
+                        }
+                    }
+                    if pendingTasks.isEmpty && draftTask == nil && completedTasks.isEmpty {
+                        Text("No tasks yet. Add one!")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .navigationTitle("Tasks")
+                .toolbar {
+                    ToolbarItem(placement: .bottomBar) {
+                        Button {
+                            draftTask = Task(name: draftTask?.name ?? "", date: date)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                withAnimation {
+                                    proxy.scrollTo("draft-task", anchor: .center)
                                 }
-                                draftTask = nil
-                            }, onCancel: { draftTask = nil })
+                            }
+                        } label: {
+                            Image(systemName: "plus")
+                                .fontWeight(.semibold)
                         }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.green)
+                        .id(date)
                     }
                 }
-                if completedTasks.isEmpty == false {
-                    Section(header: Text("Completed")) {
-                        ForEach(completedTasks) { task in
-                            TaskView(task: task)
-                                .matchedGeometryEffect(id: "\(task.id)-completed", in: namespace)
-                        }
-                    }
+                .alert("Error", isPresented: $showError) {
+                    Button("OK") { }
+                } message: {
+                    Text(errorMessage ?? "An error occured")
                 }
-                if pendingTasks.isEmpty && draftTask == nil && completedTasks.isEmpty {
-                    Text("No tasks yet. Add one!")
-                        .foregroundStyle(.secondary)
+                .onChange(of: date) { oldValue, newValue in
+                    draftTask = nil
                 }
-            }
-            .navigationTitle("Tasks")
-            .toolbar {
-                ToolbarItem(placement: .bottomBar) {
-                    Button {
-                        draftTask = Task(name: "", date: date)
-                    } label: {
-                        Image(systemName: "plus")
-                            .fontWeight(.semibold)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.green)
-                }
-            }
-            .alert("Error", isPresented: $showError) {
-                Button("OK") { }
-            } message: {
-                Text(errorMessage ?? "An error occured")
             }
         }
     }

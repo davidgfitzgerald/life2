@@ -149,22 +149,17 @@ struct TaskView: View {
                     .onAppear { if isDraft { isFocused = true } }
                     .onSubmit { onCommit?(task.name) }
                 
-                ClosingDatePicker(date: $task.date)
-                    .labelsHidden()
-                    .opacity(0)
-                    .overlay {
-                        HStack {
-                            Image(systemName: "calendar")
-                                .font(.caption)
-                                .foregroundStyle(.blue)
-                            Text(DateFormatters.DDMMYYYY.string(from: task.date))
-                                .font(.subheadline)
-                                .foregroundStyle(.blue)
-                                .fixedSize(horizontal: true, vertical: false)
-                            Spacer()
-                        }
-                        .allowsHitTesting(false)
+                ClosingDatePicker(date: $task.date) {
+                    HStack {
+                        Image(systemName: "calendar")
+                            .font(.caption)
+                            .foregroundStyle(.blue)
+                        Text(DateFormatters.DDMMYYYY.string(from: task.date))
+                            .font(.subheadline)
+                            .foregroundStyle(.blue)
+                            .fixedSize(horizontal: true, vertical: false)
                     }
+                }
             }
             Spacer()
             if isDraft {

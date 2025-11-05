@@ -8,29 +8,44 @@
 import SwiftUI
 
 
-struct ClosingDatePicker: View {
+struct ClosingDatePicker<Content: View>: View {
     /**
      * Date picker that automatically closes when
      * the selected date changes.
+     *
+     * TODO document how this works, it's pretty hacky.
      */
+    let content: Content
     @Binding var date: Date
     @State private var showCalendar: Bool = false
     
+    init(date: Binding<Date>, @ViewBuilder content: () -> Content = {
+        /**
+         * Default content to display. It _looks_ like a regular
+         * DatePicker, but behind the scenes it's inactive and
+         * the tap behaviour has been altered.
+         */
+        VStack {
+            DatePicker(
+                "Select date",
+                selection: .constant(Date()),
+                displayedComponents: .date
+            )
+            .labelsHidden()
+            .allowsHitTesting(false)
+        }
+    }) {
+        self._date = date
+        self.content = content()
+    }
+
+
     var body: some View {
-        Button(action: {
+        content // Display passed in (or default) content
+        .contentShape(Rectangle())
+        .onTapGesture {
             showCalendar = true
-        }, label: {
-            HStack {
-                // This displays very similarly to the
-                // default DatePicker.
-                Text(date, format: .dateTime.day().month().year())
-                    .foregroundColor(.primary)
-            }
-            .padding(10)
-            .frame(height: 30)
-            .background(Color(.systemGray5))
-            .cornerRadius(50)
-        })
+        }
         .popover(isPresented: $showCalendar) {
             DatePicker(
                 "Select date",
@@ -39,12 +54,14 @@ struct ClosingDatePicker: View {
             )
             .datePickerStyle(.graphical)
             .padding()
+            .padding(.top)
             .frame(width: 365, height: 365)
             /**
              * The smallest device this will support is iPhone SE (3rd Gen), which has screen width 375.
              * From https://stackoverflow.com/a/78116229
              */
             .presentationCompactAdaptation(.popover)
+            .presentationBackground(.regularMaterial)
         }
         .onChange(of: date) { _, _ in
             showCalendar = false

@@ -89,12 +89,15 @@ struct TaskListView: View {
             }
             .navigationTitle("Tasks")
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
+                ToolbarItem(placement: .bottomBar) {
                     Button {
                         draftTask = Task(name: "", date: date)
                     } label: {
                         Image(systemName: "plus")
+                            .fontWeight(.semibold)
                     }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.green)
                 }
             }
             .alert("Error", isPresented: $showError) {
@@ -105,6 +108,7 @@ struct TaskListView: View {
         }
     }
 }
+
 
 struct TaskView: View {
     /**

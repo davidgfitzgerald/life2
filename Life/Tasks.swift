@@ -82,6 +82,10 @@ struct TaskListView: View {
                         }
                     }
                 }
+                if pendingTasks.isEmpty && draftTask == nil && completedTasks.isEmpty {
+                    Text("No tasks yet. Add one!")
+                        .foregroundStyle(.secondary)
+                }
             }
             .navigationTitle("Tasks")
             .toolbar {

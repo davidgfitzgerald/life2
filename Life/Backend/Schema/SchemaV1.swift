@@ -25,7 +25,6 @@ extension SchemaV1 {
         /**
          * Raw DB fields.
          */
-        @Attribute(.unique)
         var name: String
         var statusRawValue: String
         var date: Date
@@ -69,13 +68,13 @@ extension SchemaV1 {
     }
     
     enum TaskError: LocalizedError {
-        case duplicateName(String)
+        case emptyName
         case saveFailed(Error)
         
         var errorDescription: String? {
             switch self {
-            case .duplicateName(let name):
-                return "A task named '\(name)' already exists."
+            case .emptyName:
+                return "Name cannot be empty."
             case .saveFailed(let error):
                 return "Failed to save task: \(error.localizedDescription)"
             }
@@ -97,17 +96,8 @@ extension SchemaV1.Task {
         date: Date = Date(),
         in context: ModelContext,
     ) -> Result<Task, SchemaV1.TaskError> {
-
-        do {
-            let descriptor = FetchDescriptor<Task>(
-                predicate: #Predicate { $0.name == name }
-            )
-            let existingTasks = try context.fetch(descriptor)
-            if existingTasks.first != nil {
-                return .failure(.duplicateName(name))
-            }
-        } catch {
-            return .failure(.saveFailed(error))
+        if name.isEmpty {
+            return .failure(.emptyName)
         }
 
         let task = Task(name: name, status: status, date: date)

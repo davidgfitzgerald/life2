@@ -15,11 +15,11 @@ struct ClosingDatePicker<Content: View>: View {
      *
      * TODO document how this works, it's pretty hacky.
      */
-    let content: Content
+    let content: (Date) -> Content
     @Binding var date: Date
     @State private var showCalendar: Bool = false
     
-    init(date: Binding<Date>, @ViewBuilder content: () -> Content = {
+    init(date: Binding<Date>, @ViewBuilder content: @escaping (Date) -> Content = {currentDate in
         /**
          * Default content to display. It _looks_ like a regular
          * DatePicker, but behind the scenes it's inactive and
@@ -28,7 +28,7 @@ struct ClosingDatePicker<Content: View>: View {
         VStack {
             DatePicker(
                 "Select date",
-                selection: .constant(Date()),
+                selection: .constant(currentDate),
                 displayedComponents: .date
             )
             .labelsHidden()
@@ -36,12 +36,11 @@ struct ClosingDatePicker<Content: View>: View {
         }
     }) {
         self._date = date
-        self.content = content()
+        self.content = content
     }
-
     
     var body: some View {
-        content // Display passed in (or default) content
+        content(date) // Display passed in (or default) content
         .contentShape(Rectangle())
         .onTapGesture {
             showCalendar = true
@@ -63,7 +62,7 @@ struct ClosingDatePicker<Content: View>: View {
             .presentationCompactAdaptation(.popover)
             .presentationBackground(.regularMaterial)
         }
-        .onChange(of: date) { _, _ in
+        .onChange(of: date) {
             showCalendar = false
         }
     }

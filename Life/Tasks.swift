@@ -151,12 +151,12 @@ struct TaskView: View {
                     .onSubmit { onCommit?(task.name) }
                 
                 HStack {
-                    ClosingDatePicker(date: $task.date) {
+                    ClosingDatePicker(date: $task.date) { currentDate in
                         HStack {
                             Image(systemName: "calendar")
                                 .font(.caption)
                                 .foregroundStyle(.blue)
-                            Text(DateFormatters.DDMMYYYY.string(from: task.date))
+                            Text(DateFormatters.DDMMYYYY.string(from: currentDate))
                                 .font(.subheadline)
                                 .foregroundStyle(.blue)
                                 .fixedSize(horizontal: true, vertical: false)

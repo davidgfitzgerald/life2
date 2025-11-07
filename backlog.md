@@ -2,9 +2,9 @@
 
 ## High Priority
 
+- [ ] Make date optional
 - [ ] Display duration (completed-created)
 - [ ] Way of creating “inbox” (unscheduled) style tasks
-
 - [ ] Allow swipe left/right to swipe days or easy nav
 - [ ] If task was not completed on a given day, configuration to automatically push back to inbox
 - [ ] Mark tasks as roll on and rolled on also show counter for how many days it’s rolled on

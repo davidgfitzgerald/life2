@@ -14,5 +14,5 @@
 21:00
 - [x] Categorise tasks 21:20
 - [x] Change task date to “move” 21:25
-- [ ] Add and display task completed at
-- [ ] Add and display task created at
+- [x] Add and display task completed at
+- [x] Add task created at

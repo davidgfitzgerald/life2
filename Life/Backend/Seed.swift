@@ -19,11 +19,12 @@ func seed(container: ModelContainer) {
         fatalError("Failed to calculate tomorrow") // This should never happen
     }
     
-    let task1 = Task(name: "Summat", date: yesterday)
-    let task2 = Task(name: "Blah", date: now)
-    let task3 = Task(name: "Read", date: tomorrow)
-    
-    container.mainContext.insertAll([task1, task2, task3])
+    container.mainContext.insertAll([
+        Task(name: "Summat", date: yesterday),
+        Task(name: "Blah", date: now),
+        Task(name: "Completed", status: .done, date: now, completedAt: now),
+        Task(name: "Read", date: tomorrow),
+    ])
     
     try? container.mainContext.save()
 }

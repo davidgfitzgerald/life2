@@ -29,21 +29,9 @@ extension SchemaV3 {
         var name: String
         var details: String
         var statusRawValue: String
-        var date: Date?
+        var date: Date
         var completedAt: Date?
         var createdAt: Date
-        
-        /**
-         * Computed properties
-         */
-        var status: TaskStatus {
-            get {
-                TaskStatus(rawValue: statusRawValue) ?? .pending
-            }
-            set {
-                statusRawValue = newValue.rawValue
-            }
-        }
         
         /**
          * Task init.
@@ -52,7 +40,7 @@ extension SchemaV3 {
             name: String,
             details: String = "",
             status: TaskStatus = TaskStatus.pending,
-            date: Date? = Date(),
+            date: Date = Date(),
             completedAt: Date? = nil,
         ) {
             self.name = name

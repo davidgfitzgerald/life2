@@ -9,11 +9,16 @@ import Foundation
 import SwiftData
 
 /**
- * Set active models here.
+ * Set active schema version here.
  */
-typealias Task = SchemaV2.Task
-typealias TaskStatus = SchemaV2.TaskStatus
-let schema = Schema(SchemaV2.models)
+typealias CurrentSchema = SchemaV3
+let schema = Schema(CurrentSchema.models)
+
+/**
+ * Add new models here.
+ */
+typealias Task = CurrentSchema.Task
+typealias TaskStatus = CurrentSchema.TaskStatus
 
 
 enum MigrationPlan: SchemaMigrationPlan {

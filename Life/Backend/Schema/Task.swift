@@ -23,6 +23,29 @@ enum TaskError: LocalizedError {
     }
 }
 
+extension Task {
+    /**
+     * Computed properties
+     */
+    var status: TaskStatus {
+        get {
+            TaskStatus(rawValue: statusRawValue) ?? .pending
+        }
+        set {
+            guard newValue.rawValue != statusRawValue else {
+                return
+            }
+            statusRawValue = newValue.rawValue
+            switch newValue {
+                case .done:
+                    completedAt = Date()
+                case .pending:
+                    completedAt = nil
+            }
+        }
+    }
+}
+
 
 extension Task {
     /**

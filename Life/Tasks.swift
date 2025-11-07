@@ -164,6 +164,11 @@ struct TaskView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     })
+                    if let completedAt = task.completedAt {
+                        Text(DateFormatters.HHMM.string(from: completedAt))
+                            .font(.caption)
+                            .foregroundStyle(.gray)
+                    }
                 }
             }
             Spacer()

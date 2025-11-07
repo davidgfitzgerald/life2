@@ -13,4 +13,10 @@ enum DateFormatters {
         formatter.dateFormat = "dd-MM-yyyy"
         return formatter
     }()
+    
+    static let HHMM: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        return formatter
+    }()
 }

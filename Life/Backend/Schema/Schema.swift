@@ -21,11 +21,13 @@ enum MigrationPlan: SchemaMigrationPlan {
         [
             SchemaV1.self,
             SchemaV2.self,
+            SchemaV3.self,
         ]
     }
     static var stages: [MigrationStage] {
         [
             migrateV1toV2,
+            migrateV2toV3,
         ]
     }
 }

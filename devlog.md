@@ -16,3 +16,4 @@
 - [x] Change task date to “move” 21:25
 - [x] Add and display task completed at
 - [x] Add task created at
+- [x] Display duration (completed-created)

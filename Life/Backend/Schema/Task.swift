@@ -44,6 +44,13 @@ extension Task {
             }
         }
     }
+    
+    var duration: TimeInterval? {
+        guard let completedAt else {
+            return Double.nan
+        }
+        return completedAt.timeIntervalSince(createdAt)
+    }
 }
 
 

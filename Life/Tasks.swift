@@ -164,10 +164,26 @@ struct TaskView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     })
-                    if let completedAt = task.completedAt {
-                        Text(DateFormatters.HHMM.string(from: completedAt))
-                            .font(.caption)
-                            .foregroundStyle(.gray)
+                    if let completedAt = task.completedAt, let duration = task.duration {
+                        VStack {
+                            Image(systemName: "checkmark")
+                                .foregroundStyle(.green)
+                                .frame(height: 16) // Consistent icon height
+
+                            Text(DateFormatters.HHMM.string(from: completedAt))
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.gray)
+
+                        VStack {
+                            Image(systemName: "timer")
+                                .foregroundColor(.blue)
+                                .frame(height: 16) // Consistent icon height
+
+                            Text(DurationFormatters.abbreviated.string(from: duration.magnitude) ?? "")
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.gray)
                     }
                 }
             }

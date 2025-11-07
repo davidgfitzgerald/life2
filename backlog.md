@@ -3,7 +3,7 @@
 ## High Priority
 
 - [ ] Make date optional
-- [ ] Display duration (completed-created)
+
 - [ ] Way of creating “inbox” (unscheduled) style tasks
 - [ ] Allow swipe left/right to swipe days or easy nav
 - [ ] If task was not completed on a given day, configuration to automatically push back to inbox
@@ -12,6 +12,7 @@
 
 ## Med Priority
 
+- [ ] Consider when moving task that selected date should move to that date too (pros and cons)
 - [ ] Keyboard Dismissal
 - [ ] Tech debt - refactor views
 - [ ] DnD reorder tasks

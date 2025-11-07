@@ -3,7 +3,6 @@
 ## High Priority
 
 - [ ] Make date optional
-
 - [ ] Way of creating “inbox” (unscheduled) style tasks
 - [ ] Allow swipe left/right to swipe days or easy nav
 - [ ] If task was not completed on a given day, configuration to automatically push back to inbox

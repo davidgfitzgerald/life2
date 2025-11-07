@@ -46,7 +46,7 @@ extension Task {
     }
     
     var duration: TimeInterval? {
-        guard let completedAt else {
+        guard let completedAt, let createdAt else {
             return Double.nan
         }
         return completedAt.timeIntervalSince(createdAt)

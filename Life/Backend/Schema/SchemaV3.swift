@@ -31,7 +31,7 @@ extension SchemaV3 {
         var statusRawValue: String
         var date: Date
         var completedAt: Date?
-        var createdAt: Date
+        var createdAt: Date?
         
         /**
          * Task init.

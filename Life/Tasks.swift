@@ -154,12 +154,7 @@ struct TaskView: View {
                     ClosingDatePicker(date: $task.date) { currentDate in
                         HStack {
                             Image(systemName: "calendar")
-                                .font(.caption)
                                 .foregroundStyle(.blue)
-                            Text(DateFormatters.DDMMYYYY.string(from: currentDate))
-                                .font(.subheadline)
-                                .foregroundStyle(.blue)
-                                .fixedSize(horizontal: true, vertical: false)
                         }
                     }
                     Button(action: {

@@ -9,3 +9,10 @@
 - [x] Refactor ClosingDatePicker 22:30
 - [x] Add description field (had to add migration plan) 23:50
 - [x] Fix date display bug 00:15
+
+7th Nov
+21:00
+- [x] Categorise tasks 21:20
+- [x] Change task date to “move” 21:25
+- [ ] Add and display task completed at
+- [ ] Add and display task created at

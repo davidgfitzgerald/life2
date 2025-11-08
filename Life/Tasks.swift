@@ -179,8 +179,7 @@ struct TaskView: View {
                             Image(systemName: "timer")
                                 .foregroundColor(.blue)
                                 .frame(height: 16) // Consistent icon height
-
-                            Text(DurationFormatters.abbreviated.string(from: duration) ?? "")
+                            Text(DurationFormatters.terse(duration))
                         }
                         .font(.caption)
                         .foregroundStyle(.gray)

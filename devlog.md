@@ -17,3 +17,8 @@
 - [x] Add and display task completed at 23:05
 - [x] Add task created at 23:05
 - [x] Display duration (completed-created) 00:30
+
+8th Nov
+10:45
+- [x] Improve duration formatting 11:45
+- [ ] Mark tasks as roll on and rolled on also show counter for how many days it’s rolled on

@@ -6,11 +6,13 @@
 - [ ] Way of creating “inbox” (unscheduled) style tasks
 - [ ] Allow swipe left/right to swipe days or easy nav
 - [ ] If task was not completed on a given day, configuration to automatically push back to inbox
-- [ ] Mark tasks as roll on and rolled on also show counter for how many days it’s rolled on
 - [ ] Mood tracker, at any point can input with option to put what you think the reason is. Then at later points you can easily see what happened recently to maybe cause it
 
 ## Med Priority
 
+- [ ] Fix animation transitioning items between pending-completed
+- [ ] Add unit tests for terse duration formatter
+- [ ] Refactor terse duration formatter
 - [ ] Consider when moving task that selected date should move to that date too (pros and cons)
 - [ ] Keyboard Dismissal
 - [ ] Tech debt - refactor views

@@ -10,7 +10,7 @@ import SwiftData
 
 
 enum SchemaV3: VersionedSchema {
-    static var versionIdentifier = Schema.Version(0, 1, 1)
+    static var versionIdentifier = Schema.Version(0, 1, 2)
     
     static var models: [any PersistentModel.Type] {
         [

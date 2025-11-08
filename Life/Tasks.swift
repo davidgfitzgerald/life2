@@ -180,7 +180,7 @@ struct TaskView: View {
                                 .foregroundColor(.blue)
                                 .frame(height: 16) // Consistent icon height
 
-                            Text(DurationFormatters.abbreviated.string(from: duration.magnitude) ?? "")
+                            Text(DurationFormatters.abbreviated.string(from: duration) ?? "")
                         }
                         .font(.caption)
                         .foregroundStyle(.gray)

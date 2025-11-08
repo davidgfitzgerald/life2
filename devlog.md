@@ -14,6 +14,6 @@
 21:00
 - [x] Categorise tasks 21:20
 - [x] Change task date to “move” 21:25
-- [x] Add and display task completed at
-- [x] Add task created at
-- [x] Display duration (completed-created)
+- [x] Add and display task completed at 23:05
+- [x] Add task created at 23:05
+- [x] Display duration (completed-created) 00:30

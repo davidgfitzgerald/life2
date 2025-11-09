@@ -137,71 +137,98 @@ struct TaskView: View {
     @State private var showDatePicker: Bool = false
     @State private var showDescription: Bool = false
     @FocusState private var isFocused: Bool
+    
+    /**
+     * TMP
+     *
+     * TODO, make this more robust and render nicely system agnostic (improve/test responsiveness).
+     */
+    let minNameWidth: CGFloat = 160
+    let maxNameWidth: CGFloat = 260
+    func textWidth(_ text: String) -> CGFloat {
+        let font = UIFont.systemFont(ofSize: 17) // Match TextField font size
+        let attributes = [NSAttributedString.Key.font: font]
+        let size = (text as NSString).size(withAttributes: attributes)
+        let width = size.width + 20 // Add padding for cursor and margins
+        return width
+    }
+    func renderWidth(_ width: CGFloat) -> CGFloat {
+        return min(maxNameWidth, max(width, minNameWidth))
+    }
 
     /**
      * View body.
      */
     var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                TextField("Task name", text: $task.name)
-                    .font(.headline)
-                    .focused($isFocused)
-                    .onAppear { if isDraft { isFocused = true } }
-                    .onSubmit { onCommit?(task.name) }
-                
-                HStack {
-                    ClosingDatePicker(date: $task.date) { currentDate in
-                        HStack {
-                            Image(systemName: "calendar")
-                                .foregroundStyle(.blue)
-                        }
+        Button(action: {
+            showDescription = true
+        },label: {
+            HStack {
+                VStack(alignment: .leading) {
+                    HStack(spacing: 0) {
+                        TextField("Task name", text: $task.name)
+                            .font(.headline)
+                            .focused($isFocused)
+                            .onAppear { if isDraft { isFocused = true } }
+                            .onSubmit { onCommit?(task.name) }
+                            .frame(width: isFocused ? renderWidth(textWidth(task.name)): minNameWidth)
+                            .padding(4)
+                            .background(.gray.opacity(0.03))
+                            .cornerRadius(8)
                     }
-                    Button(action: {
-                        showDescription = true
-                    }, label: {
-                        Text("description")
+                    
+                    HStack {
+                        // TODO: render using grid to ensure nice alignment
+                        ClosingDatePicker(date: $task.date) { currentDate in
+                            VStack {
+                                Image(systemName: "calendar")
+                                    .foregroundStyle(.blue)
+                                    .frame(height: 16)
+                                Text("move")
+                            }
                             .font(.caption)
-                            .foregroundStyle(.secondary)
-                    })
-                    if let completedAt = task.completedAt, let duration = task.duration {
-                        VStack {
-                            Image(systemName: "checkmark")
-                                .foregroundStyle(.green)
-                                .frame(height: 16) // Consistent icon height
-
-                            Text(DateFormatters.HHMM.string(from: completedAt))
+                            .foregroundStyle(.gray)
                         }
-                        .font(.caption)
-                        .foregroundStyle(.gray)
-
-                        VStack {
-                            Image(systemName: "timer")
-                                .foregroundColor(.blue)
-                                .frame(height: 16) // Consistent icon height
-                            Text(DurationFormatters.terse(duration))
+                        
+                        if let completedAt = task.completedAt, let duration = task.duration {
+                            VStack {
+                                Image(systemName: "checkmark")
+                                    .foregroundStyle(.green)
+                                    .frame(height: 16)
+                                
+                                Text(DateFormatters.HHMM.string(from: completedAt))
+                            }
+                            .font(.caption)
+                            .foregroundStyle(.gray)
+                            
+                            VStack {
+                                Image(systemName: "timer")
+                                    .foregroundColor(.blue)
+                                    .frame(height: 16)
+                                Text(DurationFormatters.terse(duration))
+                            }
+                            .font(.caption)
+                            .foregroundStyle(.gray)
                         }
-                        .font(.caption)
-                        .foregroundStyle(.gray)
                     }
                 }
+                Spacer()
+                if isDraft {
+                    Button("Cancel") { onCancel?() }
+                        .buttonStyle(.borderless)
+                } else {
+                    TaskCompletionButtonView(task: task)
+                }
             }
-            Spacer()
-            if isDraft {
-                Button("Cancel") { onCancel?() }
-                    .buttonStyle(.borderless)
-            } else {
-                TaskCompletionButtonView(task: task)
+            .sheet(isPresented: $showDescription) {
+                TextEditor(text: $task.details)
+                    .scrollContentBackground(.hidden)
+                    .padding()
+                    .padding()
+                    .presentationDetents([.medium, .large])
+                    .presentationBackground(.regularMaterial)
             }
-        }
-        .sheet(isPresented: $showDescription) {
-            TextEditor(text: $task.details)
-            .scrollContentBackground(.hidden)
-            .padding()
-            .padding()
-            .presentationDetents([.medium, .large])
-            .presentationBackground(.regularMaterial)
-        }
+        })
     }
 }
 

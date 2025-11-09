@@ -25,5 +25,5 @@
 9th Nov
 14:00
 - [x] Refactor `ClosingDatePicker` to use `Button` instead of `.onTapGesture()` 14:15
-- [ ] Remove description button
+- [x] Remove description button 15:45
 - [ ] Mark tasks as roll on and rolled on also show counter for how many days it’s rolled on

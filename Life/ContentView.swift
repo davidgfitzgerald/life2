@@ -38,19 +38,15 @@ struct PreviewWrapper: View {
     /**
      * This preview should reflect the behaviour within the @main app.
      */
-    @State var newDayMonitor: NewDayMonitor
-    let container: ModelContainer
-    
+    private let backgroundTaskService: BackgroundTaskService
+    private let dataService: DataService
+
     init() {
-        var shouldSeed = true
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        self.container = DataContainer.create(shouldSeed: &shouldSeed, configuration: config)
-        let context = ModelContext(container)
+        var isFirstLaunch = StartupService.checkFirstLaunch()
+        self.dataService = DataService(shouldSeed: &isFirstLaunch)
+        self.backgroundTaskService = BackgroundTaskService(container: dataService.container)
         
-        self._newDayMonitor = State(initialValue: NewDayMonitor(onDayChange: {
-            Task.roll(in: context)
-        }))
-        onAppStartup(context)
+        StartupService.runStartupTasks(context: dataService.context)
         
         /**
          * Everything below here is for dev/testing only
@@ -58,14 +54,16 @@ struct PreviewWrapper: View {
          */
         let now = Date()
         let dayAgo = Calendar.current.date(byAdding: .day, value: -1, to: now)!
-        Timer.scheduledTimer(withTimeInterval: TimeInterval(5), repeats: false) {_ in 
+        let context = dataService.context
+        Timer.scheduledTimer(withTimeInterval: TimeInterval(5), repeats: false) {_ in
             context.insert(Task(name: "Delayed task", date: dayAgo, rollOn: true))
         }
+        
     }
             
     var body: some View {
         ContentView()
-            .modelContainer(container)
-            .environment(newDayMonitor)
+            .modelContainer(dataService.container)
+            .environment(backgroundTaskService.newDayMonitor)
     }
 }

@@ -10,46 +10,26 @@ import SwiftData
 
 @main
 struct LifeApp: App {
-    // isFirstTimeLaunch is used to initialise data
-    // on very first app load.
-    @AppStorage("isFirstTimeLaunch") private var isFirstTimeLaunch: Bool = true
-    
-    @State private var dayMonitor: NewDayMonitor
-    private var container: ModelContainer
+    private let backgroundTaskService: BackgroundTaskService
+    private let dataService: DataService
 
+    
     init() {
-        var isFirstLaunch = UserDefaults.standard.bool(forKey: "isFirstTimeLaunch")
-        if UserDefaults.standard.object(forKey: "isFirstTimeLaunch") == nil {
-            isFirstLaunch = true  // First time ever
-        }
-        self.container = DataContainer.create(
-            shouldSeed: &isFirstLaunch,
-            configuration: ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-        )
-        self._dayMonitor = State(initialValue: NewDayMonitor(onDayChange: { [container] in
-            Task.roll(in: container.mainContext)
-        }))
+        var isFirstLaunch = StartupService.checkFirstLaunch()
+        self.dataService = DataService(shouldSeed: &isFirstLaunch)
+        self.backgroundTaskService = BackgroundTaskService(container: dataService.container)
         
+        StartupService.runStartupTasks(context: dataService.context)
         
-        onAppStartup(container.mainContext)
     }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(dayMonitor)
+                .environment(backgroundTaskService.newDayMonitor)
         }
         .modelContainer(
-            container
+            dataService.container
         )
     }
-}
-
-@MainActor
-func onAppStartup(_ context: ModelContext) {
-    /**
-     * Runs once when app launches
-     */
-    print("App started!")
-    Task.roll(in: context)
 }

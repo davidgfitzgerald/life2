@@ -13,7 +13,6 @@ struct ContentView: View {
      * View environment.
      */
     @Environment(\.modelContext) private var modelContext
-    
     /**
      * View state.
      */
@@ -27,12 +26,46 @@ struct ContentView: View {
         TaskListView(
             date: date
         )
+        DebugView()
     }
 }
 
 #Preview {
-    var shouldSeed: Bool = true
-    var configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-    ContentView()
-        .modelContainer(DataContainer.create(shouldSeed: &shouldSeed, configuration: configuration))
+    PreviewWrapper()
+}
+
+struct PreviewWrapper: View {
+    /**
+     * This preview should reflect the behaviour within the @main app.
+     */
+    @State var dayMonitor: NewDayMonitor
+    let container: ModelContainer
+    
+    init() {
+        var shouldSeed = true
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        self.container = DataContainer.create(shouldSeed: &shouldSeed, configuration: config)
+        let context = ModelContext(container)
+        
+        self._dayMonitor = State(initialValue: NewDayMonitor(onDayChange: {
+            Task.roll(in: context)
+        }))
+        onAppStartup(context)
+        
+        /**
+         * Everything below here is for dev/testing only
+         * and does not reflect the behaviour in the @main app.
+         */
+        let now = Date()
+        let dayAgo = Calendar.current.date(byAdding: .day, value: -1, to: now)!
+        Timer.scheduledTimer(withTimeInterval: TimeInterval(5), repeats: false) {_ in 
+            context.insert(Task(name: "Delayed task", date: dayAgo, rollOn: true))
+        }
+    }
+            
+    var body: some View {
+        ContentView()
+            .modelContainer(container)
+            .environment(dayMonitor)
+    }
 }

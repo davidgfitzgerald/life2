@@ -84,6 +84,24 @@ extension Task {
             return .failure(.saveFailed(error))
         }
     }
+    
+    @MainActor
+    static func roll(
+        in context: ModelContext
+    ) {
+        /**
+         * Roll tasks on to the current day.
+         */
+        let descriptor = FetchDescriptor<Task>(
+            predicate: #Predicate { $0.rollOn }
+        )
+        guard let tasks = try? context.fetch(descriptor) else { return }
+        
+        for task in tasks {
+            task.date = Date()
+        }
+        try? context.save()
+    }
 }
 
 

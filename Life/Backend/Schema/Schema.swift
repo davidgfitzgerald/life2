@@ -11,7 +11,7 @@ import SwiftData
 /**
  * Set active schema version here.
  */
-typealias CurrentSchema = SchemaV3
+typealias CurrentSchema = SchemaV4
 let schema = Schema(CurrentSchema.models)
 
 /**
@@ -27,12 +27,14 @@ enum MigrationPlan: SchemaMigrationPlan {
             SchemaV1.self,
             SchemaV2.self,
             SchemaV3.self,
+            SchemaV4.self,
         ]
     }
     static var stages: [MigrationStage] {
         [
             migrateV1toV2,
             migrateV2toV3,
+            migrateV3toV4,
         ]
     }
 }

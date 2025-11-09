@@ -27,6 +27,7 @@ func seed(container: ModelContainer) {
 
     container.mainContext.insertAll([
         Task(name: "Summat", date: yesterday),
+        Task(name: "Immediate roll on", date: yesterday, rollOn: true),
         Task(name: "Blah", date: now),
         Task(name: "Completed", status: .done, date: now, completedAt: startOfToday),
         Task(name: "Before", status: .done, date: now, completedAt: beforeNow),

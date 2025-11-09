@@ -253,6 +253,29 @@ struct TaskCompletionButtonView: View {
     }
 }
 
+struct DebugView: View {
+    @Environment(NewDayMonitor.self) private var dayMonitor
+    @State var opacity: Int = 1
+    
+    var body: some View {
+        ZStack {
+            VStack {
+                Text("Days changed: \(dayMonitor.dayChangeCount)")
+                Text("Last change: \(dayMonitor.lastChangeDate?.description ?? "Never")")
+            }
+                .opacity(Double(opacity))
+            
+            Color.clear
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    opacity = (opacity + 1) % 2
+                }
+        }
+        .frame(width: .infinity, height: 50)
+
+    }
+}
+
 #Preview("TaskListView") {
     TaskListView(date: Date())
 }

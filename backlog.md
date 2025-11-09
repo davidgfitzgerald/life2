@@ -10,12 +10,12 @@
 
 ## Med Priority
 
+- [ ] Tech debt - refactor views
 - [ ] Fix animation transitioning items between pending-completed
 - [ ] Add unit tests for terse duration formatter
 - [ ] Refactor terse duration formatter
 - [ ] Consider when moving task that selected date should move to that date too (pros and cons)
 - [ ] Keyboard Dismissal
-- [ ] Tech debt - refactor views
 - [ ] DnD reorder tasks
 - [ ] Make task creation button bigger / render nicer on iOS
 - [ ] Search/suggest existing tasks when creating new ones

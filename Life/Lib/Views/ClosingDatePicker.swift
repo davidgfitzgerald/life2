@@ -40,28 +40,32 @@ struct ClosingDatePicker<Content: View>: View {
     }
     
     var body: some View {
-        content(date) // Display passed in (or default) content
-        .contentShape(Rectangle())
-        .onTapGesture {
+        Button(action: {
             showCalendar = true
-        }
-        .popover(isPresented: $showCalendar) {
-            DatePicker(
-                "Select date",
-                selection: $date,
-                displayedComponents: .date
-            )
-            .datePickerStyle(.graphical)
-            .padding()
-            .padding(.top)
-            .frame(width: 365, height: 365)
-            /**
-             * The smallest device this will support is iPhone SE (3rd Gen), which has screen width 375.
-             * From https://stackoverflow.com/a/78116229
-             */
-            .presentationCompactAdaptation(.popover)
-            .presentationBackground(.regularMaterial)
-        }
+        }, label: {
+            content(date) // Display passed in (or default) content
+            .contentShape(Rectangle())
+            .popover(isPresented: $showCalendar) {
+                DatePicker(
+                    "Select date",
+                    selection: $date,
+                    displayedComponents: .date
+                )
+                .datePickerStyle(.graphical)
+                .padding()
+                .padding(.top)
+                .frame(width: 365, height: 365)
+                /**
+                 * TODO improve rendering.
+                 *
+                 * The smallest device this will support is iPhone SE (3rd Gen), which has screen width 375.
+                 * From https://stackoverflow.com/a/78116229
+                 */
+                .presentationCompactAdaptation(.popover)
+                .presentationBackground(.regularMaterial)
+            }
+        })
+        .buttonStyle(.plain)
         .onChange(of: date) {
             showCalendar = false
         }

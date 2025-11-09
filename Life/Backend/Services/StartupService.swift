@@ -14,20 +14,27 @@ class StartupService {
     /**
      * Service concerned with app startup behaviour.
      */
-    // isFirstTimeLaunch is used to initialise data
-    // on very first app load.
-//    @AppStorage("isFirstTimeLaunch") private var isFirstTimeLaunch: Bool = true
+    private static let firstLaunchKey = "isFirstTimeLaunch"
+    private let userDefaults: UserDefaults
     
-    static func checkFirstLaunch() -> Bool {
-        var isFirst = UserDefaults.standard.bool(forKey: "isFirstTimeLaunch")
-        if UserDefaults.standard.object(forKey: "isFirstTimeLaunch") == nil {
-            isFirst = true
-        }
-        return isFirst
+    init(userDefaults: UserDefaults = .standard) {
+        self.userDefaults = userDefaults
     }
     
-    static func runStartupTasks(context: ModelContext) {
+    func checkFirstLaunch() -> Bool {
+        if userDefaults.object(forKey: StartupService.firstLaunchKey) == nil {
+            print("setting firstLaunch to true")
+            return true
+        }
+        print("firstLaunch already set to \(userDefaults.bool(forKey: StartupService.firstLaunchKey))")
+        return userDefaults.bool(forKey: StartupService.firstLaunchKey)
+    }
+    
+    func runStartupTasks(context: ModelContext) {
         print("App started!")
         Task.roll(in: context)
+        
+        print("setting firstLaunch to false")
+        userDefaults.set(false, forKey: StartupService.firstLaunchKey)
     }
 }

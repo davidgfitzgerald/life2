@@ -12,7 +12,7 @@ import SwiftData
 actor DataContainer {
     
     @MainActor
-    static func create(shouldSeed: inout Bool, configuration: ModelConfiguration) -> ModelContainer {
+    static func create(shouldSeed: Bool, configuration: ModelConfiguration) -> ModelContainer {
         do {
             let container = try ModelContainer(
                 for: schema,
@@ -21,7 +21,6 @@ actor DataContainer {
             )
         
             if shouldSeed {
-                shouldSeed = false
                 seed(container: container)
             }
             return container

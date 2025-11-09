@@ -10,26 +10,20 @@ import SwiftData
 
 @main
 struct LifeApp: App {
-    private let backgroundTaskService: BackgroundTaskService
-    private let dataService: DataService
-
-    
-    init() {
-        var isFirstLaunch = StartupService.checkFirstLaunch()
-        self.dataService = DataService(shouldSeed: &isFirstLaunch)
-        self.backgroundTaskService = BackgroundTaskService(container: dataService.container)
-        
-        StartupService.runStartupTasks(context: dataService.context)
-        
-    }
+    private let config = AppConfiguration()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(backgroundTaskService.newDayMonitor)
+                .configured(with: config)
         }
-        .modelContainer(
-            dataService.container
-        )
+    }
+}
+
+extension View {
+    func configured(with config: AppConfiguration) -> some View {
+        self
+            .modelContainer(config.dataService.container)
+            .environment(config.backgroundTaskService.newDayMonitor)
     }
 }

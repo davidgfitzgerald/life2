@@ -30,31 +30,34 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    PreviewWrapper()
+#Preview("First Launch") {
+    /**
+     * This preview should reflect the behaviour within the @main app.
+     *
+     * Use a fresh set of user defaults to mimic first time launch.
+     */
+    let previewDefaults = UserDefaults(suiteName: "preview")!
+    previewDefaults.removePersistentDomain(forName: "preview")
+
+    let config = AppConfiguration(
+        inMemory: true,
+        userDefaults: previewDefaults,
+    )
+    return PreviewWrapper(config: config)
 }
 
 struct PreviewWrapper: View {
-    /**
-     * This preview should reflect the behaviour within the @main app.
-     */
-    private let backgroundTaskService: BackgroundTaskService
-    private let dataService: DataService
+    var config: AppConfiguration
 
-    init() {
-        var isFirstLaunch = StartupService.checkFirstLaunch()
-        self.dataService = DataService(shouldSeed: &isFirstLaunch)
-        self.backgroundTaskService = BackgroundTaskService(container: dataService.container)
-        
-        StartupService.runStartupTasks(context: dataService.context)
-        
+    init(config: AppConfiguration) {
+        self.config = config
         /**
          * Everything below here is for dev/testing only
          * and does not reflect the behaviour in the @main app.
          */
         let now = Date()
         let dayAgo = Calendar.current.date(byAdding: .day, value: -1, to: now)!
-        let context = dataService.context
+        let context = config.dataService.context
         Timer.scheduledTimer(withTimeInterval: TimeInterval(5), repeats: false) {_ in
             context.insert(Task(name: "Delayed task", date: dayAgo, rollOn: true))
         }
@@ -63,7 +66,6 @@ struct PreviewWrapper: View {
             
     var body: some View {
         ContentView()
-            .modelContainer(dataService.container)
-            .environment(backgroundTaskService.newDayMonitor)
+            .configured(with: config)
     }
 }

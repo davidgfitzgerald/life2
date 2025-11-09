@@ -27,3 +27,4 @@
 - [x] Refactor `ClosingDatePicker` to use `Button` instead of `.onTapGesture()` 14:15
 - [x] Remove description button 15:45
 - [x] Mark tasks as roll on and rolled on also show counter for how many days it’s rolled on 20:10
+- [x] Refactor: shared code in LifeApp and ContentView preview 21:45

@@ -15,11 +15,13 @@ class DataService {
     let container: ModelContainer
     let context: ModelContext
     
-    init(shouldSeed: inout Bool) {
-        var seed = shouldSeed
+    init(
+        shouldSeed: Bool,
+        inMemory: Bool = false,
+    ) {
         self.container = DataContainer.create(
-            shouldSeed: &seed,
-            configuration: ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+            shouldSeed: shouldSeed,
+            configuration: ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory)
         )
         self.context = container.mainContext
     }

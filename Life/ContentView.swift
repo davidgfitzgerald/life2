@@ -38,7 +38,7 @@ struct PreviewWrapper: View {
     /**
      * This preview should reflect the behaviour within the @main app.
      */
-    @State var dayMonitor: NewDayMonitor
+    @State var newDayMonitor: NewDayMonitor
     let container: ModelContainer
     
     init() {
@@ -47,7 +47,7 @@ struct PreviewWrapper: View {
         self.container = DataContainer.create(shouldSeed: &shouldSeed, configuration: config)
         let context = ModelContext(container)
         
-        self._dayMonitor = State(initialValue: NewDayMonitor(onDayChange: {
+        self._newDayMonitor = State(initialValue: NewDayMonitor(onDayChange: {
             Task.roll(in: context)
         }))
         onAppStartup(context)
@@ -66,6 +66,6 @@ struct PreviewWrapper: View {
     var body: some View {
         ContentView()
             .modelContainer(container)
-            .environment(dayMonitor)
+            .environment(newDayMonitor)
     }
 }

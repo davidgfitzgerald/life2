@@ -36,24 +36,18 @@ class NewDayMonitor {
         let now = Date()
         let startOfToday = Calendar.current.startOfDay(for: now)
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: startOfToday)!
-        
-//        let timeInterval = tomorrow.timeIntervalSince(now)
-        // Dev
-        let timeInterval = TimeInterval(3)
-        
+        let timeUntilMidnight = tomorrow.timeIntervalSince(now)
         
         // Schedule timer to fire just after midnight
-        timer = Timer.scheduledTimer(withTimeInterval: timeInterval + 1, repeats: false) { [weak self] _ in
+        timer = Timer.scheduledTimer(withTimeInterval: timeUntilMidnight + 1, repeats: false) { [weak self] _ in
                 self?.checkDayChange()
             }
         }
     
     private func checkDayChange() {
         let today = Calendar.current.startOfDay(for: Date())
-        
-        // Dev
-//        let dayHasChanged = today != currentDay
-        let dayHasChanged = true
+
+        let dayHasChanged = today != currentDay
         
         if dayHasChanged {
             currentDay = today

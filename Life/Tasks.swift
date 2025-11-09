@@ -143,8 +143,8 @@ struct TaskView: View {
      *
      * TODO, make this more robust and render nicely system agnostic (improve/test responsiveness).
      */
-    let minNameWidth: CGFloat = 160
-    let maxNameWidth: CGFloat = 260
+    let minNameWidth: CGFloat = 100
+    let maxNameWidth: CGFloat = 250
     func textWidth(_ text: String) -> CGFloat {
         let font = UIFont.systemFont(ofSize: 17) // Match TextField font size
         let attributes = [NSAttributedString.Key.font: font]
@@ -153,7 +153,7 @@ struct TaskView: View {
         return width
     }
     func renderWidth(_ width: CGFloat) -> CGFloat {
-        return min(maxNameWidth, max(width, minNameWidth))
+        return min(max(textWidth(task.name), minNameWidth), maxNameWidth)
     }
 
     /**
@@ -171,7 +171,7 @@ struct TaskView: View {
                             .focused($isFocused)
                             .onAppear { if isDraft { isFocused = true } }
                             .onSubmit { onCommit?(task.name) }
-                            .frame(width: isFocused ? renderWidth(textWidth(task.name)): minNameWidth)
+                            .frame(width: renderWidth(textWidth(task.name)))
                             .padding(4)
                             .background(.gray.opacity(0.03))
                             .cornerRadius(8)

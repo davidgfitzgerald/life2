@@ -33,3 +33,4 @@
 18:20
 - [x] Dependency injected temporal monitor 20:45
 - [x] Enable toggling tasks as roll on 21:00
+- [x] Better scroll to draft task 21:30

@@ -25,7 +25,7 @@ extension SchemaV4 {
         /**
          * Raw DB fields.
          */
-        var name: String // TODO rename to title
+        var name: String
         var details: String
         var statusRawValue: String
         var date: Date

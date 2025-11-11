@@ -90,14 +90,15 @@ struct TaskListView: View {
                     }
                 }
                 .navigationTitle("Tasks")
-                .toolbar {
+                .toolbar(content: {
                     ToolbarItem(placement: .bottomBar) {
                         Button {
                             draftTask = Task(name: draftTask?.name ?? "", date: date)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 withAnimation {
-                                    proxy.scrollTo("draft-task", anchor: .center)
+                                    proxy.scrollTo("draft-task", anchor: .top)
                                 }
+                                
                             }
                         } label: {
                             Image(systemName: "plus")
@@ -107,7 +108,7 @@ struct TaskListView: View {
                         .tint(.green)
                         .id(date)
                     }
-                }
+                })
                 .alert("Error", isPresented: $showError) {
                     Button("OK") { }
                 } message: {

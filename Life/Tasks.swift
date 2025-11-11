@@ -136,7 +136,8 @@ struct TaskView: View {
      */
     @State private var showDatePicker: Bool = false
     @State private var showDescription: Bool = false
-    @FocusState private var isFocused: Bool
+    @FocusState private var nameIsFocused: Bool
+    @FocusState private var descriptionIsFocused: Bool
     
     /**
      * TMP
@@ -168,8 +169,8 @@ struct TaskView: View {
                     HStack(spacing: 0) {
                         TextField("Task name", text: $task.name)
                             .font(.headline)
-                            .focused($isFocused)
-                            .onAppear { if isDraft { isFocused = true } }
+                            .focused($nameIsFocused)
+                            .onAppear { if isDraft { nameIsFocused = true } }
                             .onSubmit { onCommit?(task.name) }
                             .frame(width: renderWidth(textWidth(task.name)))
                             .padding(4)
@@ -221,12 +222,23 @@ struct TaskView: View {
                 }
             }
             .sheet(isPresented: $showDescription) {
-                TextEditor(text: $task.details)
-                    .scrollContentBackground(.hidden)
-                    .padding()
-                    .padding()
-                    .presentationDetents([.medium, .large])
-                    .presentationBackground(.regularMaterial)
+                VStack {
+                    Toggle("Roll On", isOn: $task.rollOn)
+                    ZStack {
+                        if task.details.isEmpty && !descriptionIsFocused {
+                            Text("Enter description ...")
+                                .foregroundStyle(.gray)
+                            
+                        }
+                        TextEditor(text: $task.details)
+                            .focused($descriptionIsFocused)
+                            .scrollContentBackground(.hidden)
+                            .presentationDetents([.medium, .large])
+                            .presentationBackground(.regularMaterial)
+                    }
+                }
+                .padding()
+                .padding()
             }
         })
     }

@@ -32,4 +32,4 @@
 11th Nov
 18:20
 - [x] Dependency injected temporal monitor 20:45
-- [ ] Enable toggling tasks as roll on
+- [x] Enable toggling tasks as roll on 21:00

@@ -86,7 +86,7 @@ extension Task {
     }
     
     @MainActor
-    static func roll(
+    static func rollover(
         in context: ModelContext
     ) {
         /**

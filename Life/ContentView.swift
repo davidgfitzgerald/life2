@@ -30,6 +30,8 @@ struct ContentView: View {
     }
 }
 
+
+
 #Preview("First Launch") {
     /**
      * This preview should reflect the behaviour within the @main app.
@@ -39,33 +41,35 @@ struct ContentView: View {
     let previewDefaults = UserDefaults(suiteName: "preview")!
     previewDefaults.removePersistentDomain(forName: "preview")
 
-    let config = AppConfiguration(
+    
+    let startupService = StartupService(userDefaults: previewDefaults)
+    let dataService = DataService(
+        shouldSeed: startupService.checkFirstLaunch(),
         inMemory: true,
-        userDefaults: previewDefaults,
     )
-    return PreviewWrapper(config: config)
-}
+    let backgroundTaskService = BackgroundTaskService(
+        container: dataService.container,
+        monitorType: IntervalMonitor.self,
+        interval: 2,
+    )
 
-struct PreviewWrapper: View {
-    var config: AppConfiguration
-
-    init(config: AppConfiguration) {
-        self.config = config
-        /**
-         * Everything below here is for dev/testing only
-         * and does not reflect the behaviour in the @main app.
-         */
-        let now = Date()
-        let dayAgo = Calendar.current.date(byAdding: .day, value: -1, to: now)!
-        let context = config.dataService.context
-        Timer.scheduledTimer(withTimeInterval: TimeInterval(5), repeats: false) {_ in
-            context.insert(Task(name: "Delayed task", date: dayAgo, rollOn: true))
-        }
-        
+    let config = AppConfiguration(
+        startupService: startupService,
+        dataService: dataService,
+        backgroundTaskService: backgroundTaskService,
+    )
+    
+    /**
+     * Everything below here is for dev/testing only
+     * and does not reflect the behaviour in the @main app.
+     */
+    let now = Date()
+    let dayAgo = Calendar.current.date(byAdding: .day, value: -1, to: now)!
+    let context = config.dataService.context
+    Timer.scheduledTimer(withTimeInterval: TimeInterval(5), repeats: false) { _ in
+        context.insert(Task(name: "Delayed task", date: dayAgo, rollOn: true))
     }
-            
-    var body: some View {
-        ContentView()
-            .configured(with: config)
-    }
+    
+    return ContentView()
+        .configured(with: config)
 }

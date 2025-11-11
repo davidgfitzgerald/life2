@@ -16,6 +16,9 @@ class StartupService {
      */
     private static let firstLaunchKey = "isFirstTimeLaunch"
     private let userDefaults: UserDefaults
+    private let startupTasks: [(ModelContext) -> Void] = [
+        Task.rollover
+    ]
     
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
@@ -32,9 +35,14 @@ class StartupService {
     
     func runStartupTasks(context: ModelContext) {
         print("App started!")
-        Task.roll(in: context)
+        for task in startupTasks {
+            task(context)
+        }
         
-        print("setting firstLaunch to false")
-        userDefaults.set(false, forKey: StartupService.firstLaunchKey)
+        if userDefaults.bool(forKey: StartupService.firstLaunchKey) {
+            print("setting firstLaunch to false")
+            userDefaults.set(false, forKey: StartupService.firstLaunchKey)
+        }
+        
     }
 }

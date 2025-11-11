@@ -28,3 +28,8 @@
 - [x] Remove description button 15:45
 - [x] Mark tasks as roll on and rolled on also show counter for how many days it’s rolled on 20:10
 - [x] Refactor: shared code in LifeApp and ContentView preview 21:45
+
+11th Nov
+18:20
+- [x] Dependency injected temporal monitor 20:45
+- [ ] Enable toggling tasks as roll on

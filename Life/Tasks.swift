@@ -254,14 +254,14 @@ struct TaskCompletionButtonView: View {
 }
 
 struct DebugView: View {
-    @Environment(NewDayMonitor.self) private var dayMonitor
+    @Environment(AnyTemporalMonitor.self) private var monitor
     @State var opacity: Int = 1
     
     var body: some View {
         ZStack {
             VStack {
-                Text("Days changed: \(dayMonitor.dayChangeCount)")
-                Text("Last change: \(dayMonitor.lastChangeDate?.description ?? "Never")")
+                Text("Days changed: \(monitor.transitionCount)")
+                Text("Last change: \(monitor.lastTransition?.description ?? "Never")")
             }
                 .opacity(Double(opacity))
             
@@ -271,7 +271,7 @@ struct DebugView: View {
                     opacity = (opacity + 1) % 2
                 }
         }
-        .frame(width: .infinity, height: 50)
+        .frame(height: 50)
 
     }
 }

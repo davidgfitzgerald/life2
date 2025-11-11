@@ -6,18 +6,25 @@
 //
 
 import SwiftData
+import Foundation
 
 
 @MainActor
 class BackgroundTaskService {
-    /**
-     * Service concerned with running background tasks.
-     */
-    let newDayMonitor: NewDayMonitor
+    let monitor: AnyTemporalMonitor
     
-    init(container: ModelContainer) {
-        self.newDayMonitor = NewDayMonitor(onDayChange: { [container] in
-            Task.roll(in: container.mainContext)
-        })
+    init(
+        container: ModelContainer,
+        monitorType: any TemporalMonitor.Type,
+        interval: TimeInterval? = nil,
+    ) {
+        let actualMonitor: any TemporalMonitor = monitorType.init(
+            onTransition: { [container] in
+                Task.rollover(in: container.mainContext)
+            },
+            interval: interval
+        )
+        
+        self.monitor = AnyTemporalMonitor(actualMonitor)
     }
 }

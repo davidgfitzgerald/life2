@@ -143,7 +143,6 @@ struct TaskView: View {
     @State private var showDatePicker: Bool = false
     @State private var showDescription: Bool = false
     @FocusState private var nameIsFocused: Bool
-    @FocusState private var descriptionIsFocused: Bool
     
     /**
      * TMP
@@ -195,23 +194,7 @@ struct TaskView: View {
                 }
             }
             .sheet(isPresented: $showDescription) {
-                VStack {
-                    Toggle("Roll On", isOn: $task.rollOn)
-                    ZStack {
-                        if task.details.isEmpty && !descriptionIsFocused {
-                            Text("Enter description ...")
-                                .foregroundStyle(.gray)
-                            
-                        }
-                        TextEditor(text: $task.details)
-                            .focused($descriptionIsFocused)
-                            .scrollContentBackground(.hidden)
-                            .presentationDetents([.medium, .large])
-                            .presentationBackground(.regularMaterial)
-                    }
-                }
-                .padding()
-                .padding()
+                TaskDescriptionSheet(task: task)
             }
             .onChange(of: nameIsFocused) { oldValue, newValue in
                 if !newValue && task.name.isEmpty {

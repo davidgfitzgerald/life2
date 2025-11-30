@@ -38,3 +38,7 @@
 30th Nov
 17:30
 - [x] Roll on tasks whenever app becomes active 18:00
+- [x] Allow swipe left/right to swipe days or easy nav 18:25
+- [ ] Allow deletion of completed tasks
+- [ ] Improve keyboard dismissal
+- [ ] Fix date picker rendering

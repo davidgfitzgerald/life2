@@ -22,11 +22,23 @@ struct ContentView: View {
      * View body.
      */
     var body: some View {
-        ClosingDatePicker(date: $date)
-        TaskListView(
-            date: date
+        VStack {
+            ClosingDatePicker(date: $date)
+            TaskListView(
+                date: date
+            )
+            DebugView()
+        }
+        .onSwipe(
+            left: {
+                print("Swiped left")
+                date = Calendar.current.date(byAdding: .day, value: 1, to: date)!
+            },
+            right: {
+                print("Swiped right")
+                date = Calendar.current.date(byAdding: .day, value: -1, to: date)!
+            },
         )
-        DebugView()
     }
 
 }

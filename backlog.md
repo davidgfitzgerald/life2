@@ -4,12 +4,14 @@
 
 - [ ] Make date optional
 - [ ] Way of creating “inbox” (unscheduled) style tasks
-- [ ] Allow swipe left/right to swipe days or easy nav
 - [ ] If task was not completed on a given day, configuration to automatically push back to inbox
 - [ ] Mood tracker, at any point can input with option to put what you think the reason is. Then at later points you can easily see what happened recently to maybe cause it
 
 ## Med Priority
 
+- [ ] Button to quickly go back to today
+- [ ] Feature to duplicate/copy an existing task to another day
+- [ ] Widen task title hitboxes
 - [ ] Tech debt - refactor views
 - [ ] Fix animation transitioning items between pending-completed
 - [ ] Add unit tests for terse duration formatter
@@ -33,9 +35,14 @@
 - [ ] Adding tags to tasks (or more abstractly)
 - [ ] Searching/filtering/grouping by tag(s)
 - [ ] Each roll on reduces the potential points earned by 10% such that a task can go to max 50% of its total original points (configurable)
+- [ ] Keep a list of items I own, like a stock list and track maintainence of them, or re-stocking if they are replenishable
 
 ## Low Priority
 
+- [ ] Submit task on keyboard dismissal with title
+- [ ] Add option to fail tasks
+- [ ] When opening app open to today, unless opened in the last 30s-1m or something
+- [ ] Inbox view: calendar at tom and inbox below. Allow DnD of tasks to days
 - [ ] Add way to track quality of skin (e.g. number of spots on face)
 - [ ] Add way to store photos (weekly check-in)
 - [ ] Understand SwiftData/app dev limitations

@@ -21,8 +21,6 @@ struct TaskListView: View {
      */
     let date: Date
     @State var draftTask: Task? = nil
-    @State var showError: Bool = false
-    @State var errorMessage: String? = nil
     
     /**
      * View queries.
@@ -59,20 +57,11 @@ struct TaskListView: View {
                                 }
                             }
                             if let draft = draftTask {
-                                TaskView(task: draft, isDraft: true, commit: { name in
-                                    let result = Task.create(
-                                        name: draft.name,
-                                        status: .pending,
-                                        date: draft.date,
-                                        in: modelContext,
-                                    )
-                                    if case let .failure(error) = result {
-                                        errorMessage = error.localizedDescription
-                                        showError = true
-                                    }
-                                    draftTask = nil
-                                }, cancel: { draftTask = nil })
-                                .id("draft-task")
+                                TaskDraftView(
+                                    draft: draft,
+                                    onCommit: { _ in draftTask = nil },
+                                    onCancel: { draftTask = nil }
+                                )
                             }
                         }
                     }
@@ -108,11 +97,6 @@ struct TaskListView: View {
                         .id(date)
                     }
                 })
-                .alert("Error", isPresented: $showError) {
-                    Button("OK") { }
-                } message: {
-                    Text(errorMessage ?? "An error occured")
-                }
                 .onChange(of: date) { oldValue, newValue in
                     draftTask = nil
                 }

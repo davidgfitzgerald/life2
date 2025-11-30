@@ -41,4 +41,4 @@
 - [x] Allow swipe left/right to swipe days or easy nav 18:25
 - [x] Allow deletion of completed tasks 18:30
 - [x] Improve keyboard dismissal 18:50
-- [ ] Fix date picker rendering
+- [ ] Tech debt - refactor views

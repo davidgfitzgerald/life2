@@ -6,13 +6,13 @@
 - [ ] Way of creating “inbox” (unscheduled) style tasks
 - [ ] If task was not completed on a given day, configuration to automatically push back to inbox
 - [ ] Mood tracker, at any point can input with option to put what you think the reason is. Then at later points you can easily see what happened recently to maybe cause it
+- [ ] Fix date picker rendering
 
 ## Med Priority
 
 - [ ] Button to quickly go back to today
 - [ ] Feature to duplicate/copy an existing task to another day
 - [ ] Widen task title hitboxes
-- [ ] Tech debt - refactor views
 - [ ] Fix animation transitioning items between pending-completed
 - [ ] Add unit tests for terse duration formatter
 - [ ] Refactor terse duration formatter

@@ -184,40 +184,7 @@ struct TaskView: View {
                             .cornerRadius(8)
                     }
                     
-                    HStack {
-                        // TODO: render using grid to ensure nice alignment
-                        ClosingDatePicker(date: $task.date) { currentDate in
-                            VStack {
-                                Image(systemName: "calendar")
-                                    .foregroundStyle(.blue)
-                                    .frame(height: 16)
-                                Text("move")
-                            }
-                            .font(.caption)
-                            .foregroundStyle(.gray)
-                        }
-                        
-                        if let completedAt = task.completedAt, let duration = task.duration {
-                            VStack {
-                                Image(systemName: "checkmark")
-                                    .foregroundStyle(.green)
-                                    .frame(height: 16)
-                                
-                                Text(DateFormatters.HHMM.string(from: completedAt))
-                            }
-                            .font(.caption)
-                            .foregroundStyle(.gray)
-                            
-                            VStack {
-                                Image(systemName: "timer")
-                                    .foregroundColor(.blue)
-                                    .frame(height: 16)
-                                Text(DurationFormatters.terse(duration))
-                            }
-                            .font(.caption)
-                            .foregroundStyle(.gray)
-                        }
-                    }
+                    TaskMetadataView(task: task)
                 }
                 Spacer()
                 if isDraft {

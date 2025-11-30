@@ -76,19 +76,13 @@ struct TaskListView: View {
                             }
                         }
                     }
-                    if completedTasks.isEmpty == false {
-                        Section(header: Text("Completed")) {
-                            ForEach(completedTasks) { task in
-                                TaskView(task: task)
-                                    .matchedGeometryEffect(id: "\(task.id)-completed", in: namespace)
-                            }
-                            .onDelete { offsets in
-                                for index in offsets {
-                                    modelContext.delete(completedTasks[index])
-                                }
-                            }
-                        }
-                    }
+                    
+                    TaskSection(
+                        tasks: completedTasks,
+                        title: "Completed",
+                        namespace: namespace
+                    )
+                    
                     if pendingTasks.isEmpty && draftTask == nil && completedTasks.isEmpty {
                         Text("No tasks yet. Add one!")
                             .foregroundStyle(.secondary)

@@ -59,7 +59,7 @@ struct TaskListView: View {
                                 }
                             }
                             if let draft = draftTask {
-                                TaskView(task: draft, isDraft: true, onCommit: { name in
+                                TaskView(task: draft, isDraft: true, commit: { name in
                                     let result = Task.create(
                                         name: draft.name,
                                         status: .pending,
@@ -71,7 +71,7 @@ struct TaskListView: View {
                                         showError = true
                                     }
                                     draftTask = nil
-                                }, onCancel: { draftTask = nil })
+                                }, cancel: { draftTask = nil })
                                 .id("draft-task")
                             }
                         }
@@ -81,6 +81,11 @@ struct TaskListView: View {
                             ForEach(completedTasks) { task in
                                 TaskView(task: task)
                                     .matchedGeometryEffect(id: "\(task.id)-completed", in: namespace)
+                            }
+                            .onDelete { offsets in
+                                for index in offsets {
+                                    modelContext.delete(completedTasks[index])
+                                }
                             }
                         }
                     }
@@ -117,7 +122,7 @@ struct TaskListView: View {
                 .onChange(of: date) { oldValue, newValue in
                     draftTask = nil
                 }
-            }
+            }.scrollDismissesKeyboard(.interactively)
         }
     }
 }
@@ -129,8 +134,8 @@ struct TaskView: View {
      */
     @Bindable var task: Task
     var isDraft: Bool = false
-    var onCommit: ((String) -> Void)?
-    var onCancel: (() -> Void)?
+    var commit: ((String) -> Void)?
+    var cancel: (() -> Void)?
 
     /**
      * View state.
@@ -172,7 +177,7 @@ struct TaskView: View {
                             .font(.headline)
                             .focused($nameIsFocused)
                             .onAppear { if isDraft { nameIsFocused = true } }
-                            .onSubmit { onCommit?(task.name) }
+                            .onSubmit { commit?(task.name) }
                             .frame(width: renderWidth(textWidth(task.name)))
                             .padding(4)
                             .background(.gray.opacity(0.03))
@@ -216,7 +221,7 @@ struct TaskView: View {
                 }
                 Spacer()
                 if isDraft {
-                    Button("Cancel") { onCancel?() }
+                    Button("Cancel") { cancel?() }
                         .buttonStyle(.borderless)
                 } else {
                     TaskCompletionButtonView(task: task)
@@ -240,6 +245,11 @@ struct TaskView: View {
                 }
                 .padding()
                 .padding()
+            }
+            .onChange(of: nameIsFocused) { oldValue, newValue in
+                if !newValue && task.name.isEmpty {
+                    cancel?()
+                }
             }
         })
     }

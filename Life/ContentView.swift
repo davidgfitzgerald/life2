@@ -28,6 +28,7 @@ struct ContentView: View {
         )
         DebugView()
     }
+
 }
 
 
@@ -72,4 +73,7 @@ struct ContentView: View {
     
     return ContentView()
         .configured(with: config)
+        .onAppActive {
+            print("App became active!")
+        }
 }

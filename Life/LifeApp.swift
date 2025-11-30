@@ -14,7 +14,6 @@ struct LifeApp: App {
     let dataService: DataService
     let backgroundTaskService: BackgroundTaskService
 
-//    let config =
     init() {
         self.startupService = StartupService(userDefaults: .standard)
         self.dataService = DataService(
@@ -36,6 +35,10 @@ struct LifeApp: App {
                             backgroundTaskService: backgroundTaskService,
                         )
                 )
+                .onAppActive {
+                    print("App became active!")
+                    Task.rollover(in: dataService.context)
+                }
         }
     }
 }
@@ -45,5 +48,26 @@ extension View {
         self
             .modelContainer(config.dataService.container)
             .environment(config.backgroundTaskService.monitor)
+    }
+}
+
+extension View {
+    func onAppActive(perform action: @escaping () -> Void) -> some View {
+        self.modifier(AppActiveModifier(action: action))
+    }
+}
+
+private struct AppActiveModifier: ViewModifier {
+    @Environment(\.scenePhase) private var scenePhase
+    let action: () -> Void
+    
+    func body(content: Content) -> some View {
+        content
+            .onChange(of: scenePhase) { oldPhase, newPhase in
+                print("onChange ran: scene changed from \(oldPhase) to \(newPhase)")
+                if newPhase == .active {
+                    action()
+                }
+            }
     }
 }

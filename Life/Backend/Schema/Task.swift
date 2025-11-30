@@ -93,7 +93,7 @@ extension Task {
          * Roll tasks on to the current day.
          */
         let descriptor = FetchDescriptor<Task>(
-            predicate: #Predicate { $0.rollOn }
+            predicate: #Predicate { $0.rollOn && ($0.completedAt == nil) }
         )
         guard let tasks = try? context.fetch(descriptor) else { return }
         

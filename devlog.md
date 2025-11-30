@@ -34,3 +34,7 @@
 - [x] Dependency injected temporal monitor 20:45
 - [x] Enable toggling tasks as roll on 21:00
 - [x] Better scroll to draft task 21:30
+
+30th Nov
+17:30
+- [x] Roll on tasks whenever app becomes active 18:00
